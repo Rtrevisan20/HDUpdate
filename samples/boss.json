@@ -1,0 +1,12 @@
+{
+	"name": "samples",
+	"description": "",
+	"version": "1.0.0",
+	"homepage": "",
+	"mainsrc": "./src",
+	"projects": [],
+	"dependencies": {
+		"github.com/rtrevisan20/hdmessagedlg": "^1.2.3",
+		"https://github.com/rtrevisan20/hdmessagedlg": "^1.2.3"
+	}
+}

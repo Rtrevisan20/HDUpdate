@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{4C4E5269-AC76-4C0F-A376-26F8DF7F0BBC}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="core\HDUpdate.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="samples\Samples.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="HDUpdate">
+        <MSBuild Projects="core\HDUpdate.dproj"/>
+    </Target>
+    <Target Name="HDUpdate:Clean">
+        <MSBuild Projects="core\HDUpdate.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="HDUpdate:Make">
+        <MSBuild Projects="core\HDUpdate.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Samples">
+        <MSBuild Projects="samples\Samples.dproj"/>
+    </Target>
+    <Target Name="Samples:Clean">
+        <MSBuild Projects="samples\Samples.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Samples:Make">
+        <MSBuild Projects="samples\Samples.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="HDUpdate;Samples"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="HDUpdate:Clean;Samples:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="HDUpdate:Make;Samples:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

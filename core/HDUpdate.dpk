@@ -1,0 +1,57 @@
+package HDUpdate;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  dbrtl,
+  fmx,
+  IndySystem;
+
+contains
+  HDUpdateCore.View.Update in 'src\view\HDUpdateCore.View.Update.pas' {ViewUpdate},
+  HDUpdateCore.View.Utils in 'src\view\HDUpdateCore.View.Utils.pas',
+  HDUpdateCore.View.Update.Thread in 'src\view\HDUpdateCore.View.Update.Thread.pas',
+  HDUpdateCore.Update.Thread in 'src\HDUpdateCore.Update.Thread.pas',
+  HDUpdateCore.Interfaces in 'src\HDUpdateCore.Interfaces.pas',
+  HDUpdateCore.Types in 'src\HDUpdateCore.Types.pas',
+  HDUpdateCore.Language.Interfaces in 'src\language\HDUpdateCore.Language.Interfaces.pas',
+  HDUpdateCore.Language.US in 'src\language\HDUpdateCore.Language.US.pas',
+  HDUpdateCore.Language.PTbr in 'src\language\HDUpdateCore.Language.PTbr.pas',
+  HDUpdateCore.Language.Consts.Factory in 'src\language\HDUpdateCore.Language.Consts.Factory.pas',
+  HDUpdateCore.Internet.Interfaces in 'src\internet\HDUpdateCore.Internet.Interfaces.pas',
+  HDUpdateCore.Internet.HttpClientHook in 'src\internet\HDUpdateCore.Internet.HttpClientHook.pas',
+  HDUpdateCore.Internet in 'src\internet\HDUpdateCore.Internet.pas',
+  HDUpdateCore.Internet.Factory in 'src\internet\HDUpdateCore.Internet.Factory.pas',
+  HDUpdateCore.Commons in 'src\HDUpdateCore.Commons.pas',
+  HDUpdateCore.Updater in 'src\HDUpdateCore.Updater.pas',
+  HDUpdateCore.Utils in 'src\HDUpdateCore.Utils.pas',
+  HDUpdateCore.Check in 'src\HDUpdateCore.Check.pas';
+
+end.
