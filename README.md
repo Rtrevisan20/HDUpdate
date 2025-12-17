@@ -94,7 +94,7 @@ Log=Um novo jeito de fazer atualização.
 ``` 
 * Segue uma explicação do arquivo .INI:
 
-  [AmbiSoft.Client] Chave do seu arquivo INI poderá passar a chave no parâmetro GitIni.
+  [AmbiSoft.Client] Chave do seu arquivo INI poderá passar a chave no parâmetro IniKeyName.
   #
   Download= Nessa opção coloque onde vai estar o seu arquivo zipado responsável pela atualização.
   * ex: Client.zip => Você pode colocar o atualizador na raiz do seu repositório e especificar apenas o nome do arquivo.
