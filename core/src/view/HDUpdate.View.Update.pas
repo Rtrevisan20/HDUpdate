@@ -28,7 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.View.Update;
+unit HDUpdate.View.Update;
 
 interface
 
@@ -44,9 +44,9 @@ uses
   FMX.StdCtrls,
   FMX.Types,
   HDMessageDlg.Interfaces,
-  HDUpdateCore.Interfaces,
-  HDUpdateCore.Language.Interfaces,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Interfaces,
+  HDUpdate.Language.Interfaces,
+  HDUpdate.Core.Types,
   System.Classes,
   System.SysUtils,
   System.Types,
@@ -76,8 +76,13 @@ type
     lyState             : TLayout;
     lyVersion           : TLayout;
     txtLog              : TText;
+    lineTopSeparator: TLine;
+    LyTopSeparator: TLayout;
+    StyleBook: TStyleBook;
     procedure FormClose        (Sender: TObject; var Action: TCloseAction);
     procedure ButtonCancelClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      var KeyChar: Char; Shift: TShiftState);
   private
     Model   : IUpdateModel;
     Msg     : iHDMessageDlg;
@@ -86,10 +91,10 @@ type
     procedure SetVersion      (const Value: string);
     procedure SetTitulo       (const Value: string);
     procedure SetStatus       (const Value: string);
-    procedure SetPngRes       (const Value: string);
+    procedure SetPngResource  (const Value: string);
     procedure SetModel        (Model: IUpdateModel);
     procedure SetUpdateState  (Value: TUpdateState);
-    procedure SetLog          (aLog: string);
+    procedure SetUpdateLog    (aLog: string);
     procedure ShowMessage     (Message: string);
     function  ShowErrorMessage(Message: string): Boolean;
     procedure Progress        (Progress, Length: Integer);
@@ -103,7 +108,7 @@ type
 implementation
 
 uses
-  HDUpdateCore.Language.Consts.Factory;
+  HDUpdate.Language.Consts.Factory;
 
 {$R *.fmx}
 
@@ -118,6 +123,13 @@ begin
   Model.Cancel;
 end;
 
+procedure TViewUpdate.FormKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: Char; Shift: TShiftState);
+begin
+  if Key = vkEscape  then
+    Model.Cancel;
+end;
+
 procedure TViewUpdate.Progress(Progress, Length: Integer);
 begin
   ProgressBar.Max   := Length;
@@ -129,7 +141,7 @@ begin
   LabelTitulo.Text := Value;
 end;
 
-procedure TViewUpdate.SetLog(aLog: string);
+procedure TViewUpdate.SetUpdateLog(aLog: string);
 begin
   txtLog.Text := aLog;
 end;
@@ -139,7 +151,7 @@ begin
   Self.Model := Model;
 end;
 
-procedure TViewUpdate.SetPngRes(const Value: string);
+procedure TViewUpdate.SetPngResource(const Value: string);
 var
   Stream: TResourceStream;
 begin

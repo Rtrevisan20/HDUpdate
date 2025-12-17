@@ -28,14 +28,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Internet.Interfaces;
+unit HDUpdate.Internet.Interfaces;
 
 interface
 
 uses
   IdComponent,
-  HDUpdateCore.Commons,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Commons,
+  HDUpdate.Core.Types,
   System.Net.HttpClient;
 
 type
@@ -53,7 +53,7 @@ type
     procedure SetGitToken   (aToken   : String);
     procedure SetGitRepo    (aRepository : String);
     procedure SetGitUserName(aUserName   : String);
-    procedure SetGitPath    (aPath       : String);
+    procedure SetGitIni     (aGitIni     : String);
     procedure SetVersion    (aVersion    : String);
 
     property  VersionAtual: string  write SetVersion;
@@ -62,7 +62,7 @@ type
     property  GitToken    : String   write SetGitToken;
     property  GitRepo     : String   write SetGitRepo;
     property  GitUserName : String   write SetGitUserName;
-    property  GitPath     : String   write SetGitPath;
+    property  GitIni      : String   write SetGitIni;
   end;
 
   IModelIternetFactory = interface

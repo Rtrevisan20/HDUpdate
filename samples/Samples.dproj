@@ -69,7 +69,7 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
         <SanitizedProjectName>Samples</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\hdmessagedlg\Samples;..\modules\hdmessagedlg\src\FMX;..\modules\hdmessagedlg\src;modules\.dcp;modules\.dcu;modules;modules\hdmessagedlg\Samples;modules\hdmessagedlg\src\FMX;modules\hdmessagedlg\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\hdmessagedlg\Samples;..\modules\hdmessagedlg\src\FMX;..\modules\hdmessagedlg\src;$(DCC_UnitSearchPath);modules\.dcp;modules\.dcu;modules;modules\hdmessagedlg\Samples;modules\hdmessagedlg\src\FMX;modules\hdmessagedlg\src</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>vclwinx;DataSnapServer;RESTDWWizards;fmx;emshosting;vclie;DbxCommonDriver;bindengine;IndyIPCommon;VCLRESTComponents;DBXMSSQLDriver;FireDACCommonODBC;emsclient;FireDACCommonDriver;RESTDWSocketIndy;appanalytics;IndyProtocols;vclx;Skia.Package.RTL;DBAUtilites;IndyIPClient;dbxcds;vcledge;bindcompvclwinx;FmxTeeUI;emsedge;bindcompfmx;DBXFirebirdDriver;SynEdit_R;inetdb;FMXfrxe28;FireDACSqliteDriver;DbxClientDriver;FireDACASADriver;Tee;soapmidas;vclactnband;TeeUI;fmxFireDAC;dbexpress;FMXfrx28;FireDACInfxDriver;DBXMySQLDriver;DesktopCaptureComponents;VclSmp;inet;DataSnapCommon;vcltouch;fmxase;DBXOdbcDriver;dbrtl;FireDACDBXDriver;FireDACOracleDriver;Skia.Package.FMX;fmxdae;TeeDB;FireDACMSAccDriver;CustomIPTransport;FireDACMSSQLDriver;DataSnapIndy10ServerTransport;DataSnapConnectors;vcldsnap;DBXInterBaseDriver;FireDACMongoDBDriver;IndySystem;FireDACTDataDriver;Skia.Package.VCL;vcldb;FMXfrxADO28;RESTDWShellServices;vclFireDAC;FMXfrxTee28;bindcomp;FireDACCommon;DataSnapServerMidas;FireDACODBCDriver;emsserverresource;office2K;IndyCore;RESTBackendComponents;FMXfsTee28;bindcompdbx;rtl;FireDACMySQLDriver;FMXfs28;FireDACADSDriver;RESTDWDriverFireDAC;RESTComponents;DBXSqliteDriver;vcl;IndyIPServer;dsnapxml;dsnapcon;DataSnapClient;DataSnapProviderClient;adortl;RFindUnit;DBXSybaseASEDriver;DBXDb2Driver;NetCom7;vclimg;DataSnapFireDAC;emsclientfiredac;FireDACPgDriver;FireDAC;FireDACDSDriver;inetdbxpress;xmlrtl;tethering;FMXfrxDB28;FMXfsDB28;RESTDWCore;bindcompvcl;dsnap;FMXfrxDBX28;CloudService;DBXSybaseASADriver;DBXOracleDriver;FireDACDb2Driver;DBXInformixDriver;FMXfrxFD28;FMXfsADO28;fmxobj;bindcompvclsmp;DataSnapNativeClient;FMXTee;DatasnapConnectorsFreePascal;soaprtl;soapserver;FireDACIBDriver;$(DCC_UsePackage)</DCC_UsePackage>
@@ -81,6 +81,9 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
+        <DCC_ExeOutput>.\Output</DCC_ExeOutput>
+        <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
+        <DCC_DcuOutput>.\DCUs</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>vclwinx;DataSnapServer;fmx;emshosting;vclie;DbxCommonDriver;bindengine;IndyIPCommon;VCLRESTComponents;DBXMSSQLDriver;FireDACCommonODBC;emsclient;FireDACCommonDriver;RESTDWSocketIndy;appanalytics;IndyProtocols;vclx;Skia.Package.RTL;IndyIPClient;dbxcds;vcledge;bindcompvclwinx;FmxTeeUI;emsedge;bindcompfmx;DBXFirebirdDriver;SynEdit_R;inetdb;FireDACSqliteDriver;DbxClientDriver;FireDACASADriver;Tee;soapmidas;vclactnband;TeeUI;fmxFireDAC;dbexpress;FireDACInfxDriver;DBXMySQLDriver;VclSmp;inet;DataSnapCommon;vcltouch;fmxase;DBXOdbcDriver;dbrtl;FireDACDBXDriver;FireDACOracleDriver;Skia.Package.FMX;fmxdae;TeeDB;FireDACMSAccDriver;CustomIPTransport;FireDACMSSQLDriver;DataSnapIndy10ServerTransport;DataSnapConnectors;vcldsnap;DBXInterBaseDriver;FireDACMongoDBDriver;IndySystem;FireDACTDataDriver;Skia.Package.VCL;vcldb;RESTDWShellServices;vclFireDAC;bindcomp;FireDACCommon;DataSnapServerMidas;FireDACODBCDriver;emsserverresource;office2K;IndyCore;RESTBackendComponents;bindcompdbx;rtl;FireDACMySQLDriver;FireDACADSDriver;RESTDWDriverFireDAC;RESTComponents;DBXSqliteDriver;vcl;IndyIPServer;dsnapxml;dsnapcon;DataSnapClient;DataSnapProviderClient;adortl;DBXSybaseASEDriver;DBXDb2Driver;NetCom7;vclimg;DataSnapFireDAC;emsclientfiredac;FireDACPgDriver;FireDAC;FireDACDSDriver;inetdbxpress;xmlrtl;tethering;RESTDWCore;bindcompvcl;dsnap;CloudService;DBXSybaseASADriver;DBXOracleDriver;FireDACDb2Driver;DBXInformixDriver;fmxobj;bindcompvclsmp;DataSnapNativeClient;FMXTee;DatasnapConnectorsFreePascal;soaprtl;soapserver;FireDACIBDriver;$(DCC_UsePackage)</DCC_UsePackage>
@@ -106,6 +109,8 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
@@ -130,27 +135,36 @@
             <Form>Form1</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\core\src\HDUpdateCore.Check.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Commons.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Interfaces.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Types.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Update.Thread.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Updater.pas"/>
-        <DCCReference Include="..\core\src\HDUpdateCore.Utils.pas"/>
-        <DCCReference Include="..\core\src\internet\HDUpdateCore.Internet.Factory.pas"/>
-        <DCCReference Include="..\core\src\internet\HDUpdateCore.Internet.HttpClientHook.pas"/>
-        <DCCReference Include="..\core\src\internet\HDUpdateCore.Internet.Interfaces.pas"/>
-        <DCCReference Include="..\core\src\internet\HDUpdateCore.Internet.pas"/>
-        <DCCReference Include="..\core\src\language\HDUpdateCore.Language.Consts.Factory.pas"/>
-        <DCCReference Include="..\core\src\language\HDUpdateCore.Language.Interfaces.pas"/>
-        <DCCReference Include="..\core\src\language\HDUpdateCore.Language.PTbr.pas"/>
-        <DCCReference Include="..\core\src\language\HDUpdateCore.Language.US.pas"/>
-        <DCCReference Include="..\core\src\view\HDUpdateCore.View.Update.pas">
+        <DCCReference Include="..\core\src\HDUpdate.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Check.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Commons.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Interfaces.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Types.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Update.Thread.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Updater.pas"/>
+        <DCCReference Include="..\core\src\core\HDUpdate.Core.Utils.pas"/>
+        <DCCReference Include="..\core\src\internet\HDUpdate.Internet.Factory.pas"/>
+        <DCCReference Include="..\core\src\internet\HDUpdate.Internet.HttpClientHook.pas"/>
+        <DCCReference Include="..\core\src\internet\HDUpdate.Internet.Interfaces.pas"/>
+        <DCCReference Include="..\core\src\internet\HDUpdate.Internet.pas"/>
+        <DCCReference Include="..\core\src\language\HDUpdate.Language.Consts.Factory.pas"/>
+        <DCCReference Include="..\core\src\language\HDUpdate.Language.Interfaces.pas"/>
+        <DCCReference Include="..\core\src\language\HDUpdate.Language.PTbr.pas"/>
+        <DCCReference Include="..\core\src\language\HDUpdate.Language.US.pas"/>
+        <DCCReference Include="..\core\src\view\HDUpdate.View.Update.pas">
             <Form>ViewUpdate</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\core\src\view\HDUpdateCore.View.Update.Thread.pas"/>
-        <DCCReference Include="..\core\src\view\HDUpdateCore.View.Utils.pas"/>
+        <DCCReference Include="..\core\src\view\HDUpdate.View.Update.Thread.pas"/>
+        <DCCReference Include="..\core\src\view\HDUpdate.View.Utils.pas"/>
+        <RcItem Include="..\imgs\updatedResource.png">
+            <ResourceType>RCDATA</ResourceType>
+            <ResourceId>updateResource</ResourceId>
+        </RcItem>
+        <RcItem Include="..\imgs\UpdateDefault.png">
+            <ResourceType>RCDATA</ResourceType>
+            <ResourceId>UpdateDefault</ResourceId>
+        </RcItem>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -171,6 +185,10 @@
                 <Source>
                     <Source Name="MainSource">Samples.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="D:\Recursos Programacao\pasfmt-rad\Win32\Debug\Pasfmt.bpl">Pasfmt for RAD Studio</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp280.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="4">
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
@@ -188,7 +206,19 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Samples.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\imgs\UpdateDefault.png" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\imgs\updatedResource.png" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Output\Samples.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Samples.exe</RemoteName>
                         <Overwrite>true</Overwrite>

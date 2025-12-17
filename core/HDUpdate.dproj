@@ -86,27 +86,28 @@
         <DCCReference Include="dbrtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="IndySystem.dcp"/>
-        <DCCReference Include="src\view\HDUpdateCore.View.Update.pas">
+        <DCCReference Include="src\view\HDUpdate.View.Update.pas">
             <Form>ViewUpdate</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="src\view\HDUpdateCore.View.Utils.pas"/>
-        <DCCReference Include="src\view\HDUpdateCore.View.Update.Thread.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Update.Thread.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Interfaces.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Types.pas"/>
-        <DCCReference Include="src\language\HDUpdateCore.Language.Interfaces.pas"/>
-        <DCCReference Include="src\language\HDUpdateCore.Language.US.pas"/>
-        <DCCReference Include="src\language\HDUpdateCore.Language.PTbr.pas"/>
-        <DCCReference Include="src\language\HDUpdateCore.Language.Consts.Factory.pas"/>
-        <DCCReference Include="src\internet\HDUpdateCore.Internet.Interfaces.pas"/>
-        <DCCReference Include="src\internet\HDUpdateCore.Internet.HttpClientHook.pas"/>
-        <DCCReference Include="src\internet\HDUpdateCore.Internet.pas"/>
-        <DCCReference Include="src\internet\HDUpdateCore.Internet.Factory.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Commons.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Updater.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Utils.pas"/>
-        <DCCReference Include="src\HDUpdateCore.Check.pas"/>
+        <DCCReference Include="src\view\HDUpdate.View.Utils.pas"/>
+        <DCCReference Include="src\view\HDUpdate.View.Update.Thread.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Update.Thread.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Interfaces.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Types.pas"/>
+        <DCCReference Include="src\language\HDUpdate.Language.Interfaces.pas"/>
+        <DCCReference Include="src\language\HDUpdate.Language.US.pas"/>
+        <DCCReference Include="src\language\HDUpdate.Language.PTbr.pas"/>
+        <DCCReference Include="src\language\HDUpdate.Language.Consts.Factory.pas"/>
+        <DCCReference Include="src\internet\HDUpdate.Internet.Interfaces.pas"/>
+        <DCCReference Include="src\internet\HDUpdate.Internet.HttpClientHook.pas"/>
+        <DCCReference Include="src\internet\HDUpdate.Internet.pas"/>
+        <DCCReference Include="src\internet\HDUpdate.Internet.Factory.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Commons.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Updater.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Utils.pas"/>
+        <DCCReference Include="src\core\HDUpdate.Core.Check.pas"/>
+        <DCCReference Include="src\HDUpdate.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

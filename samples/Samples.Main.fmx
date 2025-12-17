@@ -1,51 +1,64 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 135
-  ClientWidth = 350
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = 'Exemplo de Updates'
+  ClientHeight = 99
+  ClientWidth = 321
   Position = MainFormCenter
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
-  OnCreate = FormCreate
   DesignerMasterStyle = 0
-  object Button1: TButton
-    Position.X = 96.000000000000000000
-    Position.Y = 39.000000000000000000
-    Size.Width = 161.000000000000000000
-    Size.Height = 50.000000000000000000
+  object btnCheckVersion: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 30.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 25.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Text = 'Atualizar'
-    OnClick = Button1Click
-  end
-  object lblPathDownload: TLabel
-    Align = Bottom
-    StyledSettings = [Family, Style, FontColor]
-    Margins.Left = 10.000000000000000000
-    Margins.Right = 10.000000000000000000
-    Margins.Bottom = 10.000000000000000000
-    Position.X = 10.000000000000000000
-    Position.Y = 92.000000000000000000
-    Size.Width = 330.000000000000000000
-    Size.Height = 33.000000000000000000
-    Size.PlatformDefault = False
-    TextSettings.Font.Size = 20.000000000000000000
-    Text = '1.0.0.1'
-    TabOrder = 6
+    Text = 'Verificar Vers'#227'o'
+    OnClick = btnCheckVersionClick
   end
   object lblVersion: TLabel
     Align = Top
-    Margins.Left = 10.000000000000000000
-    Margins.Top = 10.000000000000000000
-    Margins.Right = 10.000000000000000000
-    Position.X = 10.000000000000000000
-    Position.Y = 10.000000000000000000
-    Size.Width = 330.000000000000000000
+    Margins.Left = 8.000000000000000000
+    Position.X = 8.000000000000000000
+    Size.Width = 313.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.VertAlign = Leading
+    Text = 'Vers'#227'o dispon'#237'vel no Github: '
+    TabOrder = 5
+  end
+  object btnUpdateNow: TButton
+    Position.X = 161.000000000000000000
+    Position.Y = 30.000000000000000000
+    Size.Width = 145.000000000000000000
     Size.Height = 25.000000000000000000
     Size.PlatformDefault = False
-    Text = 'lblVersion'
-    TabOrder = 5
+    TabOrder = 7
+    Text = 'Atualizar Agora'
+    OnClick = btnUpdateNowClick
+  end
+  object btnUpdateStandalone: TButton
+    Position.X = 161.000000000000000000
+    Position.Y = 63.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Text = 'Atualizar Standalone'
+    OnClick = btnUpdateStandaloneClick
+  end
+  object btnUpdateResource: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 63.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Text = 'Atualizar Resource'
+    OnClick = btnUpdateResourceClick
   end
 end

@@ -28,14 +28,14 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.Internet;
+unit HDUpdate.Internet;
 
 interface
 
 uses
-  HDUpdateCore.Commons,
-  HDUpdateCore.Internet.Interfaces,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Commons,
+  HDUpdate.Internet.Interfaces,
+  HDUpdate.Core.Types,
   System.Classes,
   System.IniFiles,
   System.Net.HttpClient,
@@ -51,7 +51,7 @@ type
     FGitToken     : String;
     FGitRepo      : String;
     FGitUserName  : String;
-    FGitPath      : String;
+    FGitIni       : String;
     FIni          : TMemIniFile;
     FVersionAtual : string;
     function GetIniFile : TMemIniFile; overload;
@@ -65,13 +65,13 @@ type
     function GetUpdateURL: string;
     function DowloadFile(aDownURL, APath: string; ADownloadProgress: TReceiveDataEventRef): Boolean;
 
-    function UpdateLog : string;
+    function  UpdateLog                  : string;
     procedure SetGitAuth    (aAuth       : Boolean = False);
     procedure SetIniKeyName (aKeyName    : String);
     procedure SetGitToken   (aToken      : String);
     procedure SetGitRepo    (aRepository : String);
     procedure SetGitUserName(aUserName   : String);
-    procedure SetGitPath    (aPath       : String);
+    procedure SetGitIni     (aGitIni       : String);
     procedure SetVersion    (aVersion    : String);
 
     end;
@@ -82,8 +82,8 @@ var
 implementation
 
 uses
-  HDUpdateCore.Internet.HttpClientHook,
-  HDUpdateCore.Utils;
+  HDUpdate.Internet.HttpClientHook,
+  HDUpdate.Core.Utils;
 
 constructor TModelInternet.Create;
 begin
@@ -147,14 +147,13 @@ var
   FHttp   : THttpClient;
   FStream : TMemoryStream;
   FUrl    : string;
-
   FReader : TStreamReader;
   FJson   : TJSONObject;
 begin
   Result  := nil;
   FStream := TMemoryStream.Create;
   try
-    FUrl  := cBASEURL+FGitUserName+'/'+FGitRepo+cCONTENTS+FGitPath;
+    FUrl  := cBASEURL+FGitUserName+'/'+FGitRepo+cCONTENTS+FGitIni;
     FHttp := THttpClient.Create;
     FReader := TStreamReader.Create(FStream);
     try
@@ -206,8 +205,8 @@ begin
   finally
     FHttp.Free;
     FReader.Free;
-    FJson.Free;
     FStream.Free;
+    FJson.Free;
   end;
 end;
 
@@ -275,9 +274,9 @@ begin
   Result := FIni.ReadString(FIniKeyName, 'Log', '');
 end;
 
-procedure TModelInternet.SetGitPath(aPath: String);
+procedure TModelInternet.SetGitIni(aGitIni: String);
 begin
-  FGitPath := aPath;
+  FGitIni := aGitIni;
 end;
 
 procedure TModelInternet.SetGitRepo(aRepository: String);

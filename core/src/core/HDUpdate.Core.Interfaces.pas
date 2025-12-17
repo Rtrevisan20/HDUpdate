@@ -28,14 +28,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Interfaces;
+unit HDUpdate.Core.Interfaces;
 
 interface
 
 uses
   IdComponent,
-  HDUpdateCore.Commons,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Commons,
+  HDUpdate.Core.Types,
   System.Net.HttpClient;
 
 type
@@ -48,12 +48,12 @@ type
   IUpdateView = interface
     ['{D04D4A90-A5A5-49F7-A260-312F76938EAA}']
     procedure SetVersion      (const Value: string);
-    procedure SetTitulo       (const Value: string);
+    procedure SetTitulo       (const Value: string = '');
     procedure SetStatus       (const Value: string);
-    procedure SetPngRes       (const Value: string);
+    procedure SetPngResource  (const Value: string);
     procedure SetModel        (Model: IUpdateModel);
     procedure SetUpdateState  (Value: TUpdateState);
-    procedure SetLog          (aLog: string);
+    procedure SetUpdateLog    (aLog: string);
 
     procedure ShowMessage     (Message: string);
     function  ShowErrorMessage(Message: string): Boolean;
@@ -62,11 +62,11 @@ type
     procedure Show;
     // properties
 
-    property Log:         string write SetLog;
+    property UpdateLog:   string write SetUpdateLog;
     property Version:     string write SetVersion;
     property Status:      string write SetStatus;
     property Titulo:      string write SetTitulo;
-    property PngRes:      string write SetPngRes;
+    property PngResource: string write SetPngResource;
     property Model: IUpdateModel write SetModel;
     property State: TUpdateState write SetUpdateState;
   end;
@@ -75,7 +75,7 @@ type
     ['{83B7058C-A3CF-4B69-A82B-D45A6B04D3BA}']
     (*=================================================================*)
     procedure UpdateCheckProc(aVersion: TFileVersion; aUpdateCheckProc: TUpdateCheckResultProc);
-    function  GetFileVersion       : TFileVersion;
+    function  GetVersionUpdate     : TFileVersion;
     function  CheckUpdate          : boolean;
     (*=================================================================*)
 
@@ -85,10 +85,10 @@ type
     function GitToken     (aGitToken      : String): IModelCheck;
     function GitRepo      (aGitRepo       : String): IModelCheck;
     function GitUserName  (aGitUserName   : String): IModelCheck;
-    function GitPath      (aGitPath       : String): IModelCheck;
+    function GitIni       (aGitIni        : String): IModelCheck;
     function RootPath     (aRootPath      : String): IModelCheck;
-    function Titulo       (aTitulo        : String): IModelCheck;
-    function PngRes       (aPngRes        : String): IModelCheck;
+    function Titulo       (aTitulo        : String = ''): IModelCheck;
+    function PngResource  (aPngResource   : String): IModelCheck;
     function ExtractNames (aExtractNames  : TStringArray): IModelCheck;
 
     function UpdateInfo : TUpdateInfo;

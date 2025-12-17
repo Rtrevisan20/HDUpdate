@@ -28,71 +28,61 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.View.Update.Thread;
+unit HDUpdate.Internet.Factory;
 
 interface
 
 uses
-  FMX.Forms,
-  HDUpdateCore.Update.Thread;
+  HDUpdate.Internet.Interfaces,
+  System.SysUtils;
 
 type
-  TFmxUpdateThread = class(TUpdateThread)
-  protected
-    function CreateView: TCustomForm; virtual;
-    procedure Work; override;
+  TModelIternetFactory = class(TInterfacedObject, IModelIternetFactory)
+  private
+    FInternetSystem         : IModelInternet;
+    FInternet               : IModelInternet;
+    function InternetSystem : IModelInternet;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    class function New: IModelIternetFactory;
+    function Internet : IModelInternet;
   end;
 
 implementation
 
 uses
-  HDUpdateCore.Interfaces,
-  HDUpdateCore.View.Update,
-  HDUpdateCore.Updater;
+  HDUpdate.Internet;
 
-function TFmxUpdateThread.CreateView: TCustomForm;
+constructor TModelIternetFactory.Create;
 begin
-  Result := TViewUpdate.Create(Application);
+
 end;
 
-procedure TFmxUpdateThread.Work;
-var
-  FModel: TUpdater;
-  FView : TCustomForm;
+destructor TModelIternetFactory.Destroy;
 begin
-  // É necessário aguardar o início do loop principal
-  while ApplicationState = TApplicationState.None do Sleep(0);
-  Sync(
-    procedure
-     begin
-      FView := CreateView;
-     end);
 
-  if Application.MainForm = nil then
-    Application.MainForm := FView;
-  FModel := nil;
-  try
-    FModel := CreateModel(FView as IUpdateView);
-    if IsUpdateFromFile then
-      FModel.UpdateFromFile(FileName) else
-      FModel.Update;
-  finally
-    FModel.Free;
-    if FView <> Application.MainForm then
-      Sync(procedure
-       begin
-        FView.Free;
-       end)
-    else
-     begin
-      IsUpdating := False;
-      Sync(
-       procedure
-        begin
-         FView.Close;
-        end);
-     end;
-  end;
+  inherited;
+end;
+
+function TModelIternetFactory.Internet: IModelInternet;
+begin
+  if not Assigned(FInternet) then
+    FInternet := InternetSystem;
+  Result := FInternet;
+end;
+
+function TModelIternetFactory.InternetSystem: IModelInternet;
+begin
+  if not Assigned(FInternetSystem) then
+    FInternetSystem := TModelInternet.New;
+
+  Result := FInternetSystem;
+end;
+
+class function TModelIternetFactory.New: IModelIternetFactory;
+begin
+  Result := Self.Create;
 end;
 
 end.

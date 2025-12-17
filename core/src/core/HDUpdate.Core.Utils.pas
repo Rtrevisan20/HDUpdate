@@ -28,7 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Utils;
+unit HDUpdate.Core.Utils;
 
 interface
 
@@ -38,9 +38,9 @@ uses
   WinApi.Windows,
   Winapi.TlHelp32;
 
-  procedure LaunchUpdateApp(FileName: TFileName = 'Update.exe'; RunAsAdministrator: Boolean = True);
-  function  Killtask(       ExeFileName: TFileName): Integer;
-  function  NormalizeFileName(FileName: string): string;
+  procedure LaunchUpdateApp   (FileName: TFileName = 'Update.exe'; RunAsAdministrator: Boolean = True);
+  function  Killtask          (ExeFileName: TFileName): Integer;
+  function  NormalizeFileName (FileName: string): string;
 
 implementation
 

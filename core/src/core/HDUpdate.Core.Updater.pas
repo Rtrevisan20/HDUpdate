@@ -28,16 +28,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Updater;
+unit HDUpdate.Core.Updater;
 
 interface
 
 uses
-  HDUpdateCore.Commons,
-  HDUpdateCore.Interfaces,
-  HDUpdateCore.Internet.Interfaces,
-  HDUpdateCore.Language.Interfaces,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Commons,
+  HDUpdate.Core.Interfaces,
+  HDUpdate.Internet.Interfaces,
+  HDUpdate.Language.Interfaces,
+  HDUpdate.Core.Types,
   System.Classes,
   System.Generics.Collections,
   System.IniFiles,
@@ -86,9 +86,9 @@ type
 implementation
 
 uses
-  HDUpdateCore.Internet.Factory,
-  HDUpdateCore.Language.Consts.Factory,
-  HDUpdateCore.Utils;
+  HDUpdate.Internet.Factory,
+  HDUpdate.Language.Consts.Factory,
+  HDUpdate.Core.Utils;
 
 {$HINTS OFF}
 function FileToOld(FileName: string): Boolean;
@@ -130,7 +130,7 @@ begin
   FInternet.GitToken    := UpdateInfo.GitToken;
   FInternet.GitRepo     := UpdateInfo.GitRepo;
   FInternet.GitUserName := UpdateInfo.GitUserName;
-  FInternet.GitPath     := UpdateInfo.GitPath;
+  FInternet.GitIni      := UpdateInfo.GitIni;
   FInternet.GitAuth     := UpdateInfo.GitAuth;
 
   FExtractNames         := UpdateInfo.ExtractNames + [ExtractFileName(ParamStr(0))];
@@ -152,17 +152,17 @@ begin
         // Description
         if UpdateInfo.Titulo <> '' then
           View.Titulo := UpdateInfo.Titulo else
-          View.Titulo := 'Atualizando seu sistema!';
-        // PngRes
-        if UpdateInfo.PngRes <> '' then
-          View.PngRes := UpdateInfo.PngRes;
+          View.Titulo := FConsts.Consts.MsgTitle;
+        // PngResource
+        if UpdateInfo.PngResource <> '' then
+          View.PngResource := UpdateInfo.PngResource;
         // Progress
         View.Progress(0, 1);
         // Status
         View.Status := FConsts.Consts.WaitingStatus;
         // Version
         View.Version := '';
-        View.Log := FInternet.UpdateLog;
+        View.UpdateLog := FInternet.UpdateLog;
       end
   );
 end;
@@ -188,8 +188,8 @@ begin
       FView.State := TUpdateState.Done;
       FView.Status := FConsts.Consts.DoneStatus;
       FView.ShowMessage(FConsts.Consts.DoneMessage);
-      HDUpdateCore.Utils.LaunchUpdateApp(FLaunchUpdateApp, True);
-      HDUpdateCore.Utils.Killtask(FLaunchUpdateApp);
+      HDUpdate.Core.Utils.LaunchUpdateApp(FLaunchUpdateApp, True);
+      HDUpdate.Core.Utils.Killtask(FLaunchUpdateApp);
     end);
 end;
 

@@ -28,14 +28,14 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.Internet.HttpClientHook;
+unit HDUpdate.Internet.HttpClientHook;
 
 interface
 
 uses
   IdComponent,
-  HDUpdateCore.Commons,
-  HDUpdateCore.Internet.Interfaces,
+  HDUpdate.Core.Commons,
+  HDUpdate.Internet.Interfaces,
   System.Net.HttpClient,
   System.SysUtils;
 

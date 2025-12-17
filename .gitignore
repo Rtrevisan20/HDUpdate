@@ -79,7 +79,8 @@ __recovery/
 *.stat
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
+imgs/
 core/modules/
 core/Win32/Debug/
 samples/modules/
-samples/Win32/Debug/
+samples/DCUs/

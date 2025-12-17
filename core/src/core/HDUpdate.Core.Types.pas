@@ -28,7 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Types;
+unit HDUpdate.Core.Types;
 
 {$SCOPEDENUMS ON}
 interface
@@ -65,14 +65,14 @@ type
     IniKeyName    : string;
     GitUserName   : string;
     GitRepo       : string;
-    GitPath       : string;
+    GitIni        : string;
     GitAuth       : boolean;
     GitToken      : string;
     ActualVersion : TFileVersion;
     // Optional
     RootPath      : string;
     Titulo        : string;
-    PngRes        : string;
+    PngResource   : string;
   end;
 
 {$IFDEF MSWINDOWS}

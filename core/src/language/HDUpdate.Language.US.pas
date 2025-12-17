@@ -28,12 +28,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Language.US;
+unit HDUpdate.Language.US;
 
 interface
 
 uses
-  HDUpdateCore.Language.Interfaces,
+  HDUpdate.Language.Interfaces,
   System.Classes,
   System.IniFiles,
   System.SysUtils;

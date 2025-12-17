@@ -28,61 +28,23 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.Internet.Factory;
+unit HDUpdate.Core.Commons;
 
 interface
 
 uses
-  HDUpdateCore.Internet.Interfaces,
-  System.SysUtils;
+  HDUpdate.Core.Types;
 
 type
-  TModelIternetFactory = class(TInterfacedObject, IModelIternetFactory)
-  private
-    FInternetSystem         : IModelInternet;
-    FInternet               : IModelInternet;
-    function InternetSystem : IModelInternet;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    class function New: IModelIternetFactory;
-    function Internet : IModelInternet;
-  end;
+  TReceiveDataEventRef    = reference to procedure(ALength: Int64; AProgress: Int64; var AAbort: Boolean);
+  TUpdateCheckResultProc  = reference to procedure(UpdateAviable: Boolean; AVersion: TFileVersion);
+  TUpdateResult           = (Success, Fail, TryAgain, Abort);
+
+const
+  cBASEURL      = 'https://api.github.com/repos/';
+  cCONTENTS     = '/contents/';
+  cDOWNLOAD_URL = 'download_url';
 
 implementation
-
-uses
-  HDUpdateCore.Internet;
-
-constructor TModelIternetFactory.Create;
-begin
-
-end;
-
-destructor TModelIternetFactory.Destroy;
-begin
-
-  inherited;
-end;
-
-function TModelIternetFactory.Internet: IModelInternet;
-begin
-  if not Assigned(FInternet) then
-    FInternet := InternetSystem;
-  Result := FInternet;
-end;
-
-function TModelIternetFactory.InternetSystem: IModelInternet;
-begin
-  if not Assigned(FInternetSystem) then
-    FInternetSystem := TModelInternet.New;
-
-  Result := FInternetSystem;
-end;
-
-class function TModelIternetFactory.New: IModelIternetFactory;
-begin
-  Result := Self.Create;
-end;
 
 end.

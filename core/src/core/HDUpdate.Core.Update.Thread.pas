@@ -28,14 +28,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Update.Thread;
+unit HDUpdate.Core.Update.Thread;
 
 interface
 
 uses
-  HDUpdateCore.Interfaces,
-  HDUpdateCore.Types,
-  HDUpdateCore.Updater,
+  HDUpdate.Core.Interfaces,
+  HDUpdate.Core.Types,
+  HDUpdate.Core.Updater,
 
   System.Classes,
   System.SysUtils;

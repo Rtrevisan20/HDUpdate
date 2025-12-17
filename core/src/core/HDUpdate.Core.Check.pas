@@ -28,15 +28,15 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.Check;
+unit HDUpdate.Core.Check;
 
 interface
 
 uses
-  HDUpdateCore.Commons,
-  HDUpdateCore.Interfaces,
-  HDUpdateCore.Internet.Interfaces,
-  HDUpdateCore.Types,
+  HDUpdate.Core.Commons,
+  HDUpdate.Core.Interfaces,
+  HDUpdate.Internet.Interfaces,
+  HDUpdate.Core.Types,
   System.SysUtils;
 
 type
@@ -62,20 +62,20 @@ type
     (*=================================================================*)
     procedure UpdateCheckProc(aVersion: TFileVersion;
                               aUpdateCheckProc: TUpdateCheckResultProc);
-    function  GetFileVersion       : TFileVersion;
-    function  CheckUpdate          : boolean;
+    function  GetVersionUpdate  : TFileVersion;
+    function  CheckUpdate       : boolean;
     (*=================================================================*)
     function ActualVersion(aActualVersion : TFileVersion): IModelCheck;
-    function IniKeyName (aIniKeyName  : String): IModelCheck;
-    function GitUserName(aGitUserName : String): IModelCheck;
-    function GitRepo    (aGitRepo     : String): IModelCheck;
-    function GitPath    (aGitPath     : String): IModelCheck;
-    function GitAuth    (aGitAuth     : Boolean = False): IModelCheck;
-    function GitToken   (aGitToken    : String): IModelCheck;
-    function RootPath   (aRootPath    : String): IModelCheck;
-    function Titulo     (aTitulo      : String): IModelCheck;
-    function PngRes     (aPngRes      : String): IModelCheck;
-    function ExtractNames(aExtractNames: TStringArray): IModelCheck;
+    function IniKeyName   (aIniKeyName    : String): IModelCheck;
+    function GitUserName  (aGitUserName   : String): IModelCheck;
+    function GitRepo      (aGitRepo       : String): IModelCheck;
+    function GitIni       (aGitIni        : String): IModelCheck;
+    function GitAuth      (aGitAuth       : Boolean = False): IModelCheck;
+    function GitToken     (aGitToken      : String): IModelCheck;
+    function RootPath     (aRootPath      : String): IModelCheck;
+    function Titulo       (aTitulo        : String = ''): IModelCheck;
+    function PngResource  (aPngResource   : String): IModelCheck;
+    function ExtractNames (aExtractNames  : TStringArray): IModelCheck;
 
     function UpdateInfo : TUpdateInfo;
   end;
@@ -86,7 +86,7 @@ var
 implementation
 
 uses
-  HDUpdateCore.Internet.Factory,
+  HDUpdate.Internet.Factory,
   System.Classes;
 
 function TModelCheck.CheckUpdate: boolean;
@@ -123,7 +123,7 @@ begin
   FUpdateInfo.ExtractNames  := aExtractNames;
 end;
 
-function TModelCheck.GetFileVersion: TFileVersion;
+function TModelCheck.GetVersionUpdate: TFileVersion;
 begin
   FModelInternet.GetVersionUpdate(Result);
 end;
@@ -136,12 +136,12 @@ begin
   FUpdateInfo.GitAuth     := aGitAuth;
 end;
 
-function TModelCheck.GitPath(aGitPath: String): IModelCheck;
+function TModelCheck.GitIni(aGitIni: String): IModelCheck;
 begin
   Result                  := Self;
-  FGitPath                := aGitPath;
-  FModelInternet.GitPath  := aGitPath;
-  FUpdateInfo.GitPath     := aGitPath;
+  FGitPath                := aGitIni;
+  FModelInternet.GitIni  := aGitIni;
+  FUpdateInfo.GitIni     := aGitIni;
 end;
 
 function TModelCheck.GitRepo(aGitRepo: String): IModelCheck;
@@ -181,11 +181,11 @@ begin
   Result := Self.Create;
 end;
 
-function TModelCheck.PngRes(aPngRes: String): IModelCheck;
+function TModelCheck.PngResource(aPngResource : String): IModelCheck;
 begin
-  Result              := Self;
-  FPngRes             := aPngRes;
-  FUpdateInfo.PngRes  := aPngRes;
+  Result                  := Self;
+  FPngRes                 := aPngResource;
+  FUpdateInfo.PngResource := aPngResource;
 end;
 
 function TModelCheck.RootPath(aRootPath: String): IModelCheck;

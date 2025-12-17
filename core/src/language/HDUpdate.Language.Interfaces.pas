@@ -28,29 +28,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.View.Utils;
+unit HDUpdate.Language.Interfaces;
 
 interface
 
-uses
-  HDUpdateCore.Types;
+type
+  IMessageConsts = interface
+    ['{696CF212-668F-45F1-A92B-968DFF536C89}']
+    function WaitingStatus        : string;
+    function DownloadingStatus    : string;
+    function RenamingFilesStatus  : string;
+    function UnpackingStatus      : string;
+    function DoneStatus           : string;
+    function ConnectionError      : string;
+    function DownloadError        : string;
+    function CorruptedFilesError  : string;
+    function DoneMessage          : string;
+    function DoneMessageRestart   : string;
+    function Version              : string;
+    function MsgTitle             : string;
+    function MsgQuestion          : string;
+    function MsgBodyLastVersion   : string;
+    function MsgBodyUpdateVersion : string;
+  end;
 
-procedure FMXUpdate(const UpdateInfo: TUpdateInfo);
-procedure FMXUpdateFromFile(const UpdateInfo: TUpdateInfo; FileName: string);
+  IFactoryConsts = interface
+    ['{1603CA30-E7C8-4997-A627-7A87CBFA7E51}']
+    function Consts: IMessageConsts;
+  end;
 
 implementation
-
-uses
-  HDUpdateCore.View.Update.Thread;
-
-procedure FMXUpdate(const UpdateInfo: TUpdateInfo);
-begin
-  TFmxUpdateThread.Create(UpdateInfo).Update;
-end;
-
-procedure FMXUpdateFromFile(const UpdateInfo: TUpdateInfo; FileName: string);
-begin
-  TFmxUpdateThread.Create(UpdateInfo).UpdateFromFile(FileName);
-end;
 
 end.

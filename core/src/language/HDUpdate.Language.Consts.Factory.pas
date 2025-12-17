@@ -28,14 +28,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 *)
-unit HDUpdateCore.Language.Consts.Factory;
+unit HDUpdate.Language.Consts.Factory;
 
 {$I Language.inc}
 
 interface
 
 uses
-  HDUpdateCore.Language.Interfaces,
+  HDUpdate.Language.Interfaces,
   System.Classes,
   System.SysUtils;
 
@@ -53,8 +53,8 @@ type
 implementation
 
 uses
-  HDUpdateCore.Language.PTbr,
-  HDUpdateCore.Language.US;
+  HDUpdate.Language.PTbr,
+  HDUpdate.Language.US;
 
 function TFactoryConsts.Consts: IMessageConsts;
 begin

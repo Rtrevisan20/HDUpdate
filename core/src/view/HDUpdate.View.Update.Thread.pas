@@ -28,23 +28,71 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 *)
-unit HDUpdateCore.Commons;
+unit HDUpdate.View.Update.Thread;
 
 interface
 
 uses
-  HDUpdateCore.Types;
+  FMX.Forms,
+  HDUpdate.Core.Update.Thread;
 
 type
-  TReceiveDataEventRef    = reference to procedure(ALength: Int64; AProgress: Int64; var AAbort: Boolean);
-  TUpdateCheckResultProc  = reference to procedure(UpdateAviable: Boolean; AVersion: TFileVersion);
-  TUpdateResult           = (Success, Fail, TryAgain, Abort);
-
-const
-  cBASEURL      = 'https://api.github.com/repos/';
-  cCONTENTS     = '/contents/';
-  cDOWNLOAD_URL = 'download_url';
+  TFmxUpdateThread = class(TUpdateThread)
+  protected
+    function CreateView: TCustomForm; virtual;
+    procedure Work; override;
+  end;
 
 implementation
+
+uses
+  HDUpdate.Core.Interfaces,
+  HDUpdate.View.Update,
+  HDUpdate.Core.Updater;
+
+function TFmxUpdateThread.CreateView: TCustomForm;
+begin
+  Result := TViewUpdate.Create(Application);
+end;
+
+procedure TFmxUpdateThread.Work;
+var
+  FModel: TUpdater;
+  FView : TCustomForm;
+begin
+  // É necessário aguardar o início do loop principal
+  while ApplicationState = TApplicationState.None do Sleep(0);
+  Sync(
+    procedure
+     begin
+      FView := CreateView;
+     end);
+
+  if Application.MainForm = nil then
+    Application.MainForm := FView;
+  FModel := nil;
+  try
+    FModel := CreateModel(FView as IUpdateView);
+    if IsUpdateFromFile then
+      FModel.UpdateFromFile(FileName) else
+      FModel.Update;
+  finally
+    FModel.Free;
+    if FView <> Application.MainForm then
+      Sync(procedure
+       begin
+        FView.Free;
+       end)
+    else
+     begin
+      IsUpdating := False;
+      Sync(
+       procedure
+        begin
+         FView.Close;
+        end);
+     end;
+  end;
+end;
 
 end.
