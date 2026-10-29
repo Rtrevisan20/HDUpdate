@@ -53,6 +53,11 @@ contains
   HDUpdate.Core.Updater in 'src\core\HDUpdate.Core.Updater.pas',
   HDUpdate.Core.Utils in 'src\core\HDUpdate.Core.Utils.pas',
   HDUpdate.Core.Check in 'src\core\HDUpdate.Core.Check.pas',
-  HDUpdate in 'src\HDUpdate.pas';
+  HDUpdate in 'src\HDUpdate.pas',
+  HDMessageDlg.Interfaces in 'modules\hdmessagedlg\src\HDMessageDlg.Interfaces.pas',
+  HDMessageDlg.Consts in 'modules\hdmessagedlg\src\HDMessageDlg.Consts.pas',
+  HDMessageDlg.IconsSVG in 'modules\hdmessagedlg\src\HDMessageDlg.IconsSVG.pas',
+  HDMessageDlg in 'modules\hdmessagedlg\src\HDMessageDlg.pas',
+  HDMessageDlg.View.FMX in 'modules\hdmessagedlg\src\FMX\HDMessageDlg.View.FMX.pas' {HDMessageDlgFMX};
 
 end.

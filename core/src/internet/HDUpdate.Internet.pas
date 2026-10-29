@@ -149,8 +149,10 @@ var
   FUrl    : string;
   FReader : TStreamReader;
   FJson   : TJSONObject;
+  FRes    : IHTTPResponse;
 begin
   Result  := nil;
+  FJson   := nil;
   FStream := TMemoryStream.Create;
   try
     FUrl  := cBASEURL+FGitUserName+'/'+FGitRepo+cCONTENTS+FGitIni;
@@ -161,12 +163,20 @@ begin
         FHttp.CustHeaders.Add('Authorization', 'Bearer ' + FGitToken);
 
       FHttp.ProxySettings := ProxySettings;
-      if FHttp.Get(FUrl, FStream).StatusCode <> 200 then exit;
-      FJson   := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(FReader.ReadToEnd), 0) as TJSONObject;
-      if FHttp.Get(FJson.GetValue<string>(cDOWNLOAD_URL), FStream).StatusCode <> 200 then
-        FreeAndNil(FStream);
+      FRes := FHttp.Get(FUrl, FStream);
+      case FRes.StatusCode of
+        200:
+         begin
+          FJson   := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(FReader.ReadToEnd), 0) as TJSONObject;
+          if FJson = nil then Exit;
+          if FHttp.Get(FJson.GetValue<string>(cDOWNLOAD_URL), FStream).StatusCode <> 200 then
+            FreeAndNil(FStream);
 
-      Result := FStream;
+          Result := FStream;
+         end;
+       else
+        raise Exception.Create('Não foi possivel conectar ao servidor!');
+      end;
     finally
       FHttp.Free;
       FReader.Free;
@@ -185,7 +195,10 @@ var
   FUrl    : string;
   FReader : TStreamReader;
   FJson   : TJSONObject;
+  FRes    : IHTTPResponse;
 begin
+  FJson := nil;
+
   if not Assigned(FIni) then
     FIni := GetIniFile;
 
@@ -199,9 +212,15 @@ begin
       FHttp.CustHeaders.Add('Authorization', 'Bearer ' + FGitToken);
 
     FHttp.ProxySettings := ProxySettings;
-    if FHttp.Get(FUrl, FStream).StatusCode <> 200 then exit;
-    FJson  := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(FReader.ReadToEnd), 0) as TJSONObject;
-    Result := FJson.GetValue<string>(cDOWNLOAD_URL);
+    FRes := FHttp.Get(FUrl, FStream);
+    case FRes.StatusCode of
+      200:
+       begin
+        FJson  := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(FReader.ReadToEnd), 0) as TJSONObject;
+        if FJson = nil then Exit;
+        Result := FJson.GetValue<string>(cDOWNLOAD_URL);
+       end;
+    end;
   finally
     FHttp.Free;
     FReader.Free;
@@ -216,12 +235,14 @@ begin
   if not Assigned(FIni) then
     FIni := GetIniFile;
 
-  if FIni = nil then Exit;
-
-  AVersion := TFileVersion.Create(FIni.ReadString(FIniKeyName, 'Version', ''));
-  if FVersionAtual < AVersion.ToString then
-    Result   := True else
-    Result   := False;
+  if FIni <> nil then
+  begin
+    AVersion := TFileVersion.Create(FIni.ReadString(FIniKeyName, 'Version', ''));
+    if FVersionAtual < AVersion.ToString then
+      Result   := True else
+      Result   := False;
+  end else
+    AVersion := TFileVersion.Create('0.0.0.0');
 end;
 
 function TModelInternet.GetIniFile: TMemIniFile;

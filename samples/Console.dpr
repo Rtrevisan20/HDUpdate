@@ -7,6 +7,7 @@ program Console;
 uses
   Vcl.Forms,
   System.SysUtils,
+  EnvConfig,
   HDUpdate.Core.Check in '..\core\src\core\HDUpdate.Core.Check.pas',
   HDUpdate.Core.Commons in '..\core\src\core\HDUpdate.Core.Commons.pas',
   HDUpdate.Core.Interfaces in '..\core\src\core\HDUpdate.Core.Interfaces.pas',
@@ -34,7 +35,7 @@ begin
 
   GlobalUpdate
     .GitAuth(       True)
-    .GitToken(      '')
+    .GitToken(      GetGitToken)
     .GitRepo(       'HDUpdate')
     .GitUserName(   'Rtrevisan20')
     .GitIni(        'updates.ini')

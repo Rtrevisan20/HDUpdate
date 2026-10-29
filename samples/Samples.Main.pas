@@ -37,10 +37,10 @@ type
 var
   Form1: TForm1;
 
-const
-  KEY = '';
-
 implementation
+
+uses
+  EnvConfig;
 
 {$R *.fmx}
 
@@ -50,7 +50,7 @@ begin
    lblVersion.Text +
     GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
+      .GitToken(      GetGitToken)
       .GitRepo(       'Updates')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
@@ -64,7 +64,7 @@ procedure TForm1.btnUpdateNowClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
+      .GitToken(      GetGitToken)
       .GitRepo(       'Updates')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
@@ -80,7 +80,7 @@ procedure TForm1.btnUpdateResourceClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
+      .GitToken(      GetGitToken)
       .GitRepo(       'Updates')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
@@ -96,7 +96,7 @@ procedure TForm1.btnUpdateStandaloneClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
+      .GitToken(      GetGitToken)
       .GitRepo(       'Updates')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
