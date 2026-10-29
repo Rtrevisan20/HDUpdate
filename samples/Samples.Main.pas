@@ -37,9 +37,6 @@ type
 var
   Form1: TForm1;
 
-const
-  KEY = '***REMOVED_GITHUB_PAT***';
-
 implementation
 
 {$R *.fmx}
@@ -50,8 +47,8 @@ begin
    lblVersion.Text +
     GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
-      .GitRepo(       'Updates')
+      .GitToken(      '')
+      .GitRepo(       'HDUpdate')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
       .IniKeyName(    'AmbiSoft.Client')
@@ -64,8 +61,8 @@ procedure TForm1.btnUpdateNowClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
-      .GitRepo(       'Updates')
+      .GitToken(      '')
+      .GitRepo(       'HDUpdate')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
       .IniKeyName(    'AmbiSoft.Client')
@@ -80,8 +77,8 @@ procedure TForm1.btnUpdateResourceClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
-      .GitRepo(       'Updates')
+      .GitToken(      '')
+      .GitRepo(       'HDUpdate')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
       .IniKeyName(    'AmbiSoft.Client')
@@ -96,8 +93,8 @@ procedure TForm1.btnUpdateStandaloneClick(Sender: TObject);
 begin
   if GlobalUpdate
       .GitAuth(       True)
-      .GitToken(      KEY)
-      .GitRepo(       'Updates')
+      .GitToken(      '')
+      .GitRepo(       'HDUpdate')
       .GitUserName(   'Rtrevisan20')
       .GitIni(        'updates.ini')
       .IniKeyName(    'AmbiSoft.Client')

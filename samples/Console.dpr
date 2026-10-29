@@ -34,7 +34,7 @@ begin
 
   GlobalUpdate
     .GitAuth(       True)
-    .GitToken(      '***REMOVED_GITHUB_TOKEN***')
+    .GitToken(      '')
     .GitRepo(       'HDUpdate')
     .GitUserName(   'Rtrevisan20')
     .GitIni(        'updates.ini')
