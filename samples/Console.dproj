@@ -161,7 +161,6 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="Win32\Debug\Console.exe" Configuration="Debug" Class="ProjectOutput"/>
-                <DeployFile LocalName="Win32\Debug\Console.exe" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>
