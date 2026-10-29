@@ -217,7 +217,7 @@ begin
   FModelCheck.GitAuth(aGitAuth);
 end;
 
-function THDUpdate.GitIni(aGitIni : String) : IHDUpdate;
+function THDUpdate.GitIni(aGitIni        : String)           : IHDUpdate;
 begin
   Result    := Self;
   FGitPath  := aGitIni;

@@ -153,8 +153,8 @@ begin
   Result  := nil;
   FStream := TMemoryStream.Create;
   try
-    FUrl    := cBASEURL+FGitUserName+'/'+FGitRepo+cCONTENTS+FGitIni;
-    FHttp   := THttpClient.Create;
+    FUrl  := cBASEURL+FGitUserName+'/'+FGitRepo+cCONTENTS+FGitIni;
+    FHttp := THttpClient.Create;
     FReader := TStreamReader.Create(FStream);
     try
       if FGitAuth then // Se for repositorio privado precisa do token
