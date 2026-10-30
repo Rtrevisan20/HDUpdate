@@ -1,22 +1,8 @@
 {
   "name": "hdupdate",
   "description": "HDUpdate - Auto-update library for Delphi applications",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/rtrevisan20/hdupdate",
-  "license": "MIT",
-  "author": "Rodrigo Trevisan",
-  "workspaces": [
-    "core",
-    "samples"
-  ],
-  "projects": [
-    {
-      "name": "core",
-      "path": "core"
-    },
-    {
-      "name": "samples",
-      "path": "samples"
-    }
-  ]
+  "mainsrc": "src/",
+  "dependencies": {}
 }
