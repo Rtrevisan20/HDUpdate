@@ -1,10 +1,10 @@
-(*
+ï»¿(*
 ***********************************************************************
   HDUpdate v0.0.1
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -39,22 +39,32 @@ type
     function DownloadingStatus    : string;
     function RenamingFilesStatus  : string;
     function UnpackingStatus      : string;
+    function PreparingInstaller   : string;
     function DoneStatus           : string;
     function ConnectionError      : string;
     function DownloadError        : string;
     function CorruptedFilesError  : string;
     function DoneMessage          : string;
     function DoneMessageRestart   : string;
+    function HashInvalid          : string;
     function Version              : string;
     function MsgTitle             : string;
     function MsgQuestion          : string;
     function MsgBodyLastVersion   : string;
     function MsgBodyUpdateVersion : string;
+    // Item 9.16: textos estaticos do form (.fmx) chumbados em pt-BR
+    function CancelButton         : string;
+    function WaitingMessage       : string;
+    function PreparingUpdate      : string;
   end;
 
   IFactoryConsts = interface
     ['{1603CA30-E7C8-4997-A627-7A87CBFA7E51}']
     function Consts: IMessageConsts;
+    // Item 9: i18n runtime
+    procedure SetLanguage(const ALanguage: string);
+    function  GetLanguage: string;
+    function  SupportedLanguages: TArray<string>;
   end;
 
 implementation

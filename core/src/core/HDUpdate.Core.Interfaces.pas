@@ -1,10 +1,10 @@
-(*
+ï»¿(*
 ***********************************************************************
   HDUpdate v0.0.1
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -33,10 +33,11 @@ unit HDUpdate.Core.Interfaces;
 interface
 
 uses
-  IdComponent,
   HDUpdate.Core.Commons,
   HDUpdate.Core.Types,
-  System.Net.HttpClient;
+  IdComponent,
+  System.Net.HttpClient,
+  System.SysUtils;
 
 type
 
@@ -57,9 +58,13 @@ type
 
     procedure ShowMessage     (Message: string);
     function  ShowErrorMessage(Message: string): Boolean;
+    procedure ShowMessageError(Message: string);
     procedure Progress        (Progress, Length: Integer);
     procedure Close;
     procedure Show;
+    // Item 9.16: textos estaticos do form (.fmx) localizados via consts
+    procedure SetCancelText (const Value: string);
+    procedure SetWaitingText(const Value: string);
     // properties
 
     property UpdateLog:   string write SetUpdateLog;
@@ -69,6 +74,8 @@ type
     property PngResource: string write SetPngResource;
     property Model: IUpdateModel write SetModel;
     property State: TUpdateState write SetUpdateState;
+    property CancelText:  string write SetCancelText;
+    property WaitingText: string write SetWaitingText;
   end;
 
   IModelCheck = interface
@@ -77,21 +84,28 @@ type
     procedure UpdateCheckProc(aVersion: TFileVersion; aUpdateCheckProc: TUpdateCheckResultProc);
     function  GetVersionUpdate     : TFileVersion;
     function  CheckUpdate          : boolean;
+    function UpdateInfo : TUpdateInfo;
     (*=================================================================*)
 
-    function ActualVersion(aActualVersion : TFileVersion): IModelCheck;
-    function GitAuth      (aGitAuth       : Boolean = False): IModelCheck;
-    function IniKeyName   (aIniKeyName    : String): IModelCheck;
-    function GitToken     (aGitToken      : String): IModelCheck;
-    function GitRepo      (aGitRepo       : String): IModelCheck;
-    function GitUserName  (aGitUserName   : String): IModelCheck;
-    function GitIni       (aGitIni        : String): IModelCheck;
-    function RootPath     (aRootPath      : String): IModelCheck;
-    function Titulo       (aTitulo        : String = ''): IModelCheck;
-    function PngResource  (aPngResource   : String): IModelCheck;
-    function ExtractNames (aExtractNames  : TStringArray): IModelCheck;
+    function ActualVersion        (aActualVersion : TFileVersion)     : IModelCheck;
+    function GitAuth              (aGitAuth       : Boolean = False)  : IModelCheck;
+    function IniKeyName           (aIniKeyName    : String)           : IModelCheck;
+    function GitToken             (aGitToken      : String)           : IModelCheck;
+    function GitRepo              (aGitRepo       : String)           : IModelCheck;
+    function GitUserName          (aGitUserName   : String)           : IModelCheck;
+    function GitIni               (aGitIni        : String)           : IModelCheck;
+    function RootPath             (aRootPath      : String)           : IModelCheck;
+    function Titulo               (aTitulo        : String = '')      : IModelCheck;
+    function PngResource          (aPngResource   : String)           : IModelCheck;
+    function ExtractNames         (aExtractNames  : TStringArray)     : IModelCheck;
+    function ExeUpdateApp         (aExeUpdateApp  : string= 'Update.exe'): IModelCheck;
+    function KillTaskApp          (aKillTaskApp   : TFileName)        : IModelCheck;
+    function UseReleases          (aValue         : Boolean = False)  : IModelCheck;
+    function RequireAssetHash     (aValue         : Boolean = False)  : IModelCheck;
+    function ReleaseAssetName     (aName          : string)           : IModelCheck;
+    function VerifyExtractedFiles (aValue         : Boolean = False)  : IModelCheck;
+    function AssetType            (aValue         : TAssetType = TAssetType.atAuto): IModelCheck;
 
-    function UpdateInfo : TUpdateInfo;
   end;
 
 implementation

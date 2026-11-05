@@ -49,9 +49,11 @@ type
     function DownloadingStatus: string;
     function RenamingFilesStatus: string;
     function UnpackingStatus: string;
+    function PreparingInstaller   : string;
     function DoneStatus: string;
     function ConnectionError: string;
     function DownloadError: string;
+    function HashInvalid          : string;
     function CorruptedFilesError: string;
     function DoneMessage: string;
     function DoneMessageRestart : string;
@@ -60,6 +62,10 @@ type
     function MsgQuestion: string;
     function MsgBodyLastVersion: string;
     function MsgBodyUpdateVersion : string;
+    // Item 9.16: textos estaticos do form (.fmx) chumbados em pt-BR
+    function CancelButton         : string;
+    function WaitingMessage       : string;
+    function PreparingUpdate      : string;
   end;
 
 implementation
@@ -108,6 +114,11 @@ begin
   Result := 'Downloading...';
 end;
 
+function TMessageConstsUS.HashInvalid: string;
+begin
+  Result := 'Hash validation failed. Invalid hash: ';
+end;
+
 function TMessageConstsUS.MsgBodyLastVersion: string;
 begin
   Result := 'System is in the latest version. ';
@@ -133,6 +144,11 @@ begin
   Result := Self.Create;
 end;
 
+function TMessageConstsUS.PreparingInstaller: string;
+begin
+  Result := 'Preparing the installer';
+end;
+
 function TMessageConstsUS.RenamingFilesStatus: string;
 begin
   Result := 'Renaming Files...';
@@ -151,6 +167,21 @@ end;
 function TMessageConstsUS.WaitingStatus: string;
 begin
   Result := 'Waiting...';
+end;
+
+function TMessageConstsUS.CancelButton: string;
+begin
+  Result := 'Cancel';
+end;
+
+function TMessageConstsUS.WaitingMessage: string;
+begin
+  Result := 'Please wait ...';
+end;
+
+function TMessageConstsUS.PreparingUpdate: string;
+begin
+  Result := 'We are preparing your update!';
 end;
 
 end.

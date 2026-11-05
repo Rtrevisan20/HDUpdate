@@ -4,7 +4,7 @@
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -41,8 +41,48 @@ uses
   procedure LaunchUpdateApp   (FileName: TFileName = 'Update.exe'; RunAsAdministrator: Boolean = True);
   function  Killtask          (ExeFileName: TFileName): Integer;
   function  NormalizeFileName (FileName: string): string;
+  /// Extrai o nome do arquivo de uma URL, removendo query string (?token=...),
+  /// fragmento (#...) e qualquer diretorio. Retorna '' se nao for possivel.
+  function  ExtractFileNameFromUrl(const AUrl: string): string;
 
 implementation
+
+function ExtractFileNameFromUrl(const AUrl: string): string;
+const
+  CInvalidChars: TSysCharSet = ['<', '>', ':', '"', '|', '?', '*', '/'];
+var
+  LUrl  : string;
+  LPos  : Integer;
+  LChar : Char;
+begin
+  Result := '';
+  LUrl   := AUrl.Trim;
+
+  // Remove fragmento e query string
+  LPos := LUrl.IndexOf('#');
+  if LPos >= 0 then
+    LUrl := LUrl.Substring(0, LPos);
+  LPos := LUrl.IndexOf('?');
+  if LPos >= 0 then
+    LUrl := LUrl.Substring(0, LPos);
+
+  if LUrl = '' then
+    Exit;
+
+  // Pega o trecho depois do ultimo '/' ou '\'
+  LPos := LUrl.LastIndexOf('/');
+  if LPos < 0 then
+    LPos := LUrl.LastIndexOf('\');
+  if LPos >= 0 then
+    LUrl := LUrl.Substring(LPos + 1);
+
+  // Nao aceita nome com caractere invalido (ex.: resto de path ou query)
+  for LChar in LUrl do
+    if CharInSet(LChar, CInvalidChars) or (LChar < #32) then
+      Exit;
+
+  Result := LUrl;
+end;
 
 function NormalizeFileName(FileName: string): string;
 begin

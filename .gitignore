@@ -91,3 +91,5 @@ core/Win32/Debug/
 samples/modules/
 samples/DCUs/
 samples/Output/
+
+Agents.md

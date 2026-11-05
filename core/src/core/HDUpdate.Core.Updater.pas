@@ -1,10 +1,10 @@
-(*
+ï»¿(*
 ***********************************************************************
-  HDUpdate v0.0.1
+HDUpdate v0.0.1
 ***********************
-  Por Renato Trevisan
+Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -42,13 +42,12 @@ uses
   System.Generics.Collections,
   System.IniFiles,
   System.SyncObjs,
+  WinApi.Windows,
   System.SysUtils,
   System.Zip;
 
 type
   TUpdater = class(TInterfacedPersistent, IUpdateModel)
-  protected
-
   private
     FLaunchUpdateApp: TFileName; // Adicionado por renato trevisan dia 10/06/2024 16:42:20
     FUpdateURL      : string;
@@ -56,7 +55,20 @@ type
     FIsAbort        : Boolean;
     FRootPath       : string;
     FUpdateFile     : string;
+    // Item 9.5: nome real do asset baixado (Samples.exe / Client.zip)
+    FUpdateFileName : string;
     FInternet       : IModelInternet;
+    FUseReleases      : Boolean;
+    FReleaseAssetName : string;
+    FVersionAtual     : TFileVersion;
+    FRolledBackFiles: TStringList;  // lista de arquivos renomeados para .old (rollback)
+    FVerifyExtracted  : Boolean;    // validar hash dos arquivos extraidos via manifest.json
+    FAssetType        : TAssetType; // atZip, atExe, atAuto
+    FKillTaskApp      : TFileName;
+    FRestartApp       : Boolean;
+    FIsExe            : Boolean; // True se for um .exe False se for .zip
+    FRequireAssetHash : Boolean;
+    FExpectedAssetSHA256 : string;
   protected
     FView   : IUpdateView;
     FConsts : IFactoryConsts;
@@ -65,6 +77,7 @@ type
     procedure SyncShowView;                              // perfect
     procedure SyncCloseView;                             // perfect
     function  SyncErrorMessage(Text: string): Boolean;   // perfect
+    procedure SyncMessageError(Text: string);            // perfect
     function  GetUpdateFileName: string;                 // perfect
     function  ExtractAll(AStrins: TStringArray): Boolean;
     // ... routlines
@@ -74,6 +87,8 @@ type
     function  Unpacking       : Boolean; virtual;        // perfect
     procedure DeleteFiles;                               // perfect
     procedure Done; virtual;                             // perfect
+    procedure CleanOldFiles;                             // Item 9: limpeza de .old
+    function  RunInstaller(const AFileName: string): Boolean; // Item 10: roda instalador .exe
     { IUpdateModel }
     procedure Cancel; virtual;                           // perfect
   public
@@ -81,6 +96,8 @@ type
     destructor  Destroy; override;
     procedure   Update;
     procedure   UpdateFromFile(FileName: string);
+    property    AssetType: TAssetType read FAssetType write FAssetType;
+    property    RestartApp: Boolean read FRestartApp;
   end;
 
 implementation
@@ -88,7 +105,11 @@ implementation
 uses
   HDUpdate.Internet.Factory,
   HDUpdate.Language.Consts.Factory,
-  HDUpdate.Core.Utils;
+  HDUpdate.Core.Utils,
+  System.Hash,
+  System.JSON,
+  System.IOUtils,
+  WinApi.ShellAPI;
 
 {$HINTS OFF}
 function FileToOld(FileName: string): Boolean;
@@ -96,7 +117,7 @@ const
   Suffics = '.old';
 begin
   if FileExists(FileName + Suffics) then
-    if not DeleteFile(FileName + Suffics) then
+    if not System.SysUtils.DeleteFile(FileName + Suffics) then
       Exit(False);
 
   if FileExists(FileName) then
@@ -116,14 +137,15 @@ procedure TUpdater.SyncCloseView;
 begin
   SyncView(
     procedure
-     begin
+    begin
       FView.Close;
-     end);
+    end);
 end;
 
 constructor TUpdater.Create(View: IUpdateView; UpdateInfo: TUpdateInfo);
 begin
-  FLaunchUpdateApp      := ExtractFileName(ParamStr(0)); //adicionado por renato trevisan dia 10/06/2024 16:30:00
+  FExpectedAssetSHA256 := '';
+  FLaunchUpdateApp      := UpdateInfo.ExeUpdateApp; //adicionado por renato trevisan dia 10/06/2024 16:30:00
 
   FInternet             := TModelIternetFactory.New.Internet;
   FInternet.IniKeyName  := UpdateInfo.IniKeyName;
@@ -134,94 +156,170 @@ begin
   FInternet.GitAuth     := UpdateInfo.GitAuth;
 
   FExtractNames         := UpdateInfo.ExtractNames + [ExtractFileName(ParamStr(0))];
-  FConsts               := TFactoryConsts.New;
+  FConsts               := TFactoryConsts.Global;
+  FRolledBackFiles      := TStringList.Create;
+  FVerifyExtracted      := UpdateInfo.VerifyExtractedFiles;
+  FRequireAssetHash     := UpdateInfo.RequireAssetHash;
+  FAssetType            := UpdateInfo.AssetType;
+  FReleaseAssetName     := UpdateInfo.ReleaseAssetName;
+  FKillTaskApp          := UpdateInfo.KillTaskApp;
+  FRestartApp           := False;
+  FUseReleases          := UpdateInfo.UseReleases;
+  FVersionAtual         := UpdateInfo.ActualVersion;
 
-  if UpdateInfo.RootPath.IsEmpty then //adicionado por renato trevisan dia 11/06/2024
-    FRootPath := IncludeTrailingPathDelimiter(ExtractFileDir(ParamStr(0)) + PathDelim + UpdateInfo.RootPath) else
-    FRootPath := IncludeTrailingPathDelimiter(ExtractFileDir(ParamStr(0)) + PathDelim);
+  if UpdateInfo.RootPath.IsEmpty then
+    FRootPath := IncludeTrailingPathDelimiter(ExtractFileDir(ParamStr(0)))
+  else
+    FRootPath := IncludeTrailingPathDelimiter(ExtractFileDir(ParamStr(0)) + PathDelim + UpdateInfo.RootPath);
 
   // set View
   Self.FView := View;
   SyncView(
     procedure
-      begin
-        // set Model
-        View.Model := Self;
-        // State
-        View.State := TUpdateState.Waiting;
-        // Description
-        if UpdateInfo.Titulo <> '' then
-          View.Titulo := UpdateInfo.Titulo else
-          View.Titulo := FConsts.Consts.MsgTitle;
-        // PngResource
-        if UpdateInfo.PngResource <> '' then
-          View.PngResource := UpdateInfo.PngResource;
-        // Progress
-        View.Progress(0, 1);
-        // Status
-        View.Status := FConsts.Consts.WaitingStatus;
-        // Version
-        View.Version := '';
-        View.UpdateLog := FInternet.UpdateLog;
-      end
+    begin
+      // set Model
+      View.Model := Self;
+      // Item 9.16: textos estaticos do form (.fmx) chumbados em pt-BR agora saem das consts
+      View.CancelText  := FConsts.Consts.CancelButton;
+      View.WaitingText := FConsts.Consts.WaitingMessage;
+      // State
+      View.State := TUpdateState.Waiting;
+      // Description
+      if UpdateInfo.Titulo <> '' then
+        View.Titulo := UpdateInfo.Titulo
+      else
+        View.Titulo := FConsts.Consts.MsgTitle;
+      // PngResource
+      if UpdateInfo.PngResource <> '' then
+        View.PngResource := UpdateInfo.PngResource;
+      // Progress
+      View.Progress(0, 1);
+      // Status
+      View.Status := FConsts.Consts.WaitingStatus;
+      // Version (Item 9.16: fix de 'VersÃ£o: ' chumbado - usa a const localizada)
+      View.Version := Format(FConsts.Consts.Version, [UpdateInfo.VersionUpdate]);
+      // Descricao padrao localizada (o .fmx traz 'Estamos preparando...' chumbado em pt-BR)
+      View.UpdateLog := FConsts.Consts.PreparingUpdate;
+      // Item 8: em modo Releases nao existe ini para ler (evita request inutil e AV)
+      if not FUseReleases then
+        if FInternet.UpdateLog <> '' then
+          View.UpdateLog := FInternet.UpdateLog;
+    end
   );
 end;
 
 procedure TUpdater.DeleteFiles;
+var
+  LUpdateFile: string;
 begin
-  if FileExists(GetUpdateFileName) then
-    DeleteFile(GetUpdateFileName);
+  LUpdateFile := GetUpdateFileName;
+  if FileExists(LUpdateFile) then
+    System.SysUtils.DeleteFile(LUpdateFile);
 end;
 
 destructor TUpdater.Destroy;
 begin
+  FreeAndNil(FRolledBackFiles);
   FView.Model := nil;
   inherited;
 end;
 
 procedure TUpdater.Done;
 begin
-  // View
+  // 1. Encerra a instancia antiga ANTES de abrir a nova.
+  //    Se KillTaskApp for o proprio executavel, o encerramento acontece pela
+  //    auto-terminacao do processo (FRestartApp), pois Killtask por nome
+  //    derrubaria tambem a instancia recem-lancada.
+  if (FKillTaskApp <> '') and
+     (not SameText(ExtractFileName(FKillTaskApp), ExtractFileName(FLaunchUpdateApp))) then
+    HDUpdate.Core.Utils.Killtask(FKillTaskApp);
+
+  // 2. Depois lanca a nova instancia
   SyncView(
-   procedure
+    procedure
     begin
       FView.State := TUpdateState.Done;
       FView.Status := FConsts.Consts.DoneStatus;
       FView.ShowMessage(FConsts.Consts.DoneMessage);
       HDUpdate.Core.Utils.LaunchUpdateApp(FLaunchUpdateApp, True);
-      HDUpdate.Core.Utils.Killtask(FLaunchUpdateApp);
     end);
+
+  FRestartApp := True;
+  // Limpa arquivos .old apos sucesso
+  CleanOldFiles;
+end;
+
+procedure TUpdater.CleanOldFiles;
+var
+  LSearch: TSearchRec;
+  LOldPath: string;
+  LFindHandle: Integer;
+begin
+  LOldPath := FRootPath + '*.old';
+  LFindHandle := FindFirst(LOldPath, faAnyFile, LSearch);
+  try
+    while LFindHandle = 0 do
+    begin
+      if (LSearch.Name <> '.') and (LSearch.Name <> '..') then
+       System.SysUtils.DeleteFile(FRootPath + LSearch.Name);
+       LFindHandle := FindNext(LSearch);
+    end;
+  finally
+    FindClose(LSearch);
+  end;
 end;
 
 function TUpdater.Download: Boolean;
+var
+  LFileName, LAssetHash, LExpected: string;
 begin
   // View
   SyncView(
     procedure
-     begin
+    begin
       FView.State   := TUpdateState.Downloading;
       FView.Status  := FConsts.Consts.DownloadingStatus;
-     end);
+    end);
 
-     try
-      Result :=
-        FInternet
-         .DowloadFile(
-          FUpdateURL,
-          GetUpdateFileName,
-           procedure(Length, Progress: Int64; var Abort: Boolean)
+  try
+    LFileName := GetUpdateFileName;
+    // Item 9.5: garante a subpasta (Updates) quando o nome do asset coincide com o exe atual
+    ForceDirectories(ExtractFileDir(LFileName));
+    Result :=
+      FInternet
+       .DowloadFile(
+        FUpdateURL,
+        LFileName,
+        procedure(Length, Progress: Int64; var Abort: Boolean)
+        begin
+          Abort := FIsAbort;
+          // View
+          SyncView(
+            procedure
             begin
-             Abort := FIsAbort;
-               // View
-             SyncView(
-              procedure
-               begin
-                FView.Progress(Progress, Length);
-               end);
+              FView.Progress(Progress, Length);
             end);
-     except
-      Result := False;
-     end;
+        end);
+
+   if Result and FRequireAssetHash and (FExpectedAssetSHA256 <> '') then
+      begin
+        LAssetHash := THashSHA2.GetHashStringFromFile(LFileName).ToLower;
+        LExpected := FExpectedAssetSHA256;
+        if LExpected.StartsWith('sha256:') then
+          LExpected := LExpected.Substring(7);
+        if not SameText(LAssetHash, LExpected) then
+        begin
+          try
+            DeleteFile(LFileName);                                // nao deixa zip corrompido para tras
+          except
+          end;
+          SyncMessageError(FConsts.Consts.HashInvalid + LAssetHash);
+          Result := False;
+        end;
+      end;
+  except
+    Result := False;
+  end;
 end;
 
 function TUpdater.ExtractAll(AStrins: TStringArray): Boolean;
@@ -243,24 +341,64 @@ end;
 function TUpdater.GetDownloadInfo: Boolean;
 var
   FileVersion: TFileVersion;
+  LRelease: TGitHubRelease;
+  LAsset: TGitHubAsset;
+  LAssetType: TAssetType;
+  LUrl: string;
 begin
   // View
   SyncView(
     procedure
-     begin
-      FView.State := TUpdateState.Waiting;
-      FView.Status := FConsts.Consts.WaitingStatus;
-     end);
+    begin
+      FView.State   := TUpdateState.Waiting;
+      FView.Status  := FConsts.Consts.WaitingStatus;
+    end);
 
-  if FInternet.GetVersionUpdate(FileVersion) then
-    SyncView(
-     procedure
-       begin
-        FView.Version := Format(FConsts.Consts.Version, [FileVersion.ToString]);
-       end);
+  FUpdateFileName := '';
 
-  FUpdateURL := FInternet.GetUpdateUrl;
-  Result     := FUpdateURL <> '';
+  if FUseReleases then
+  begin
+    if FInternet.GetLatestRelease(LRelease) then
+    begin
+      FileVersion := LRelease.GetVersion;
+      SyncView(
+        procedure
+        begin
+          FView.Version := Format(FConsts.Consts.Version, [FileVersion.ToString]);
+        end);
+      if FileVersion > FVersionAtual then
+      begin
+        LAssetType := FAssetType;
+        if FInternet.GetReleaseAssetUrl(LRelease, FReleaseAssetName, LUrl, FExpectedAssetSHA256, LAssetType) then
+        begin
+          FUpdateURL := LUrl;
+          // Item 9.5: usa o nome real do asset como nome do arquivo local
+          LAsset := LRelease.FindAsset(FReleaseAssetName, LAssetType);
+          if not LAsset.IsEmpty then
+            FUpdateFileName := LAsset.Name;
+          Result := True;
+        end else
+          Result := False;
+      end else
+        Result := False;
+    end else
+      Result := False;
+  end else
+  begin
+    // Modo Classico usando o arquivo INI
+    if FInternet.GetVersionUpdate(FileVersion) then
+      SyncView(
+        procedure
+        begin
+          FView.Version := Format(FConsts.Consts.Version, [FileVersion.ToString]);
+        end);
+
+    FUpdateURL := FInternet.GetURLUpdateINI;
+    Result     := FUpdateURL <> '';
+    if Result then
+      // Item 9.7: nome do arquivo a partir da URL, sem query string (?token=...)
+      FUpdateFileName := ExtractFileNameFromUrl(FUpdateURL);
+  end;
 end;
 
 function TUpdater.SyncErrorMessage(Text: string): Boolean;
@@ -269,26 +407,85 @@ var
 begin
   SyncView(
     procedure
-     begin
+    begin
       R := FView.ShowErrorMessage(Text);
-     end);
+    end);
 
   Result := R;
+end;
+
+procedure TUpdater.SyncMessageError(Text: string);
+begin
+  SyncView(
+    procedure
+    begin
+      FView.ShowMessageError(Text);
+    end);
 end;
 
 procedure TUpdater.SyncShowView;
 begin
   SyncView(
     procedure
-     begin
+    begin
       FView.Show;
-     end);
+    end);
 end;
 
 procedure TUpdater.SyncView(Proc: TThreadProcedure);
 begin
   if FView <> nil then
     TThread.Synchronize(nil, Proc);
+end;
+
+// Item 10: detecta executavel pela extensao e, como fallback, pela assinatura PE ('MZ')
+function IsExecutableFile(const AFileName: string): Boolean;
+const
+  CMagicMZ = $5A4D;
+var
+  LStream: TFileStream;
+  LMagic : Word;
+begin
+  Result := False;
+  if not FileExists(AFileName) then Exit;
+  if SameText(ExtractFileExt(AFileName), '.exe') then Exit(True);
+
+  LStream := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+  try
+    if LStream.Size >= SizeOf(LMagic) then
+    begin
+      LStream.ReadBuffer(LMagic, SizeOf(LMagic));
+      Result := LMagic = CMagicMZ;
+    end;
+  finally
+    LStream.Free;
+  end;
+end;
+
+function TUpdater.RunInstaller(const AFileName: string): Boolean;
+var
+  LExecInfo: TShellExecuteInfo;
+begin
+  Result := False;
+  FillChar(LExecInfo, SizeOf(LExecInfo), 0);
+  LExecInfo.cbSize := SizeOf(TShellExecuteInfo);
+  LExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
+  LExecInfo.Wnd := 0;
+  LExecInfo.lpVerb := 'open';
+  LExecInfo.lpFile := PWideChar(UnicodeString(AFileName));
+  // Executa normalmente (visivel) para o usuario acompanhar a instalacao
+  LExecInfo.lpParameters := '';
+  LExecInfo.nShow := SW_SHOW;
+  if ShellExecuteEx(@LExecInfo) then
+  begin
+    // Aguarda o instalador terminar
+    if LExecInfo.hProcess <> 0 then
+    begin
+      WaitForSingleObject(LExecInfo.hProcess, INFINITE);
+      CloseHandle(LExecInfo.hProcess);
+    end;
+    Result := True;
+  end;
 end;
 
 function TUpdater.Unpacking: Boolean;
@@ -298,94 +495,226 @@ var
   LFullFileName: string;
   LFileName: string;
   LExeName: string;
+  LManifestJson: string;
+  LManifestObj: TJSONObject;
+  LFilesObj: TJSONObject;
+  LFileHash: string;
+  LExpectedHash: string;
+  LPair: TJSONPair;
+  LStream: TStream;          // fix: leitura do manifest em memoria (sem arquivo temp)
+  LZipHeader: TZipHeader;    // fix
+  LManifestBytes: TBytes;    // fix
+  LExtractedFile: string;
+  LOldFile: string;
+  LFile: string;
+  LExec: string;
 begin
   Result := True;
+  FRolledBackFiles.Clear;
   // View
   SyncView(
     procedure
-     begin
+    begin
       FView.State  := TUpdateState.Unpacking;
       FView.Status := FConsts.Consts.UnpackingStatus;
-     end);
-  // Unpacking
-  LZipFile := TZipFile.Create;
-  try
-    try
-     LZipFile.Open(GetUpdateFileName, TZipMode.zmRead);
-      {Verifica se vai extratir tudo ou não}
-      if not ExtractAll(FExtractNames) then begin
-        for LForIndex := 0 to LZipFile.FileCount - 1 do begin
-          for LExeName in FExtractNames do begin
-           LFileName := ExtractFileName(NormalizeFileName(LZipFile.FileName[LforIndex]));
-            if LExeName.ToUpper = LFileName.ToUpper then begin
-              LFullFileName := FRootPath + NormalizeFileName(LZipFile.FileName[LforIndex]);
-              if not FileToOld(LFullFileName) then
-                Exit(False);
+    end);
 
-              LZipFile.Extract(LFileName, FRootPath);
-              Break;
+  LExec := GetUpdateFileName;
+  FIsExe := IsExecutableFile(LExec);
+
+  if FIsExe then
+  begin
+    // View
+    SyncView(
+      procedure
+      begin
+        FView.Status := FConsts.Consts.PreparingInstaller;
+      end);
+   FLaunchUpdateApp := LExec;
+   Exit(True);
+  end else
+  begin
+    // Unpacking ZIP (lÃ³gica existente)
+    LZipFile := TZipFile.Create;
+    try
+      try
+        LZipFile.Open(GetUpdateFileName, TZipMode.zmRead);
+        {Verifica se vai extratir tudo ou nao}
+        if not ExtractAll(FExtractNames) then
+        begin
+          for LForIndex := 0 to LZipFile.FileCount - 1 do
+          begin
+            for LExeName in FExtractNames do
+            begin
+              LFileName := ExtractFileName(NormalizeFileName(LZipFile.FileName[LforIndex]));
+              if LExeName.ToUpper = LFileName.ToUpper then
+              begin
+                LFullFileName := FRootPath + NormalizeFileName(LZipFile.FileName[LforIndex]);
+                if not FileToOld(LFullFileName) then
+                  Exit(False);
+                FRolledBackFiles.Add(LFullFileName);
+
+                LZipFile.Extract(LFileName, FRootPath);
+                Break;
+              end;
+            end;
+            // View
+            SyncView(
+              procedure
+              begin
+                FView.Progress(LForIndex, LZipFile.FileCount - 1);
+              end);
+          end;
+        end else
+        begin
+          // Se vai extrair tudo, primeiro verifica se tem manifest.json para validacao
+          LManifestJson := '';
+          if FVerifyExtracted then
+          begin
+            try
+              // Le o manifest.json direto em memoria via TZipFile.Read.
+              // Antes: GetTempFileName + Extract + ReadAllText(LTempFile) lia o
+              // tmpXXXX.tmp VAZIO (0 bytes) -> LManifestJson = '' e a validacao
+              // de hash era pulada silenciosamente (prova: probe 04/11/2026).
+              for LForIndex := 0 to LZipFile.FileCount - 1 do
+              begin
+                if SameText(ExtractFileName(LZipFile.FileName[LForIndex]), 'manifest.json') then
+                begin
+                  LZipFile.Read(LForIndex, LStream, LZipHeader);
+                  try
+                    LStream.Position := 0;
+                    SetLength(LManifestBytes, LStream.Size);
+                    if LStream.Size > 0 then
+                      LStream.ReadBuffer(LManifestBytes, Length(LManifestBytes));
+                    LManifestJson := TEncoding.UTF8.GetString(LManifestBytes);
+                    // Remove BOM, se houver (JSON gravado por WriteAllText(UTF8) traz BOM)
+                    if LManifestJson.StartsWith(Chr($FEFF)) then
+                      LManifestJson := LManifestJson.Substring(1);
+                  finally
+                    LStream.Free;
+                  end;
+                  Break;
+                end;
+              end;
+            except
+              LManifestJson := '';
             end;
           end;
-          // View
-          SyncView(
-            procedure
-             begin
-              FView.Progress(LforIndex, LZipFile.FileCount - 1);
-             end);
-        end;
-      end
-    else
-      begin
-        for LForIndex := 0 to LZipFile.FileCount - 1 do begin
-          LFullFileName := FRootPath + NormalizeFileName(LZipFile.FileName[LforIndex]);
 
-          if not FileToOld(LFullFileName) then Exit(False);
-          // View
-          SyncView(
-            procedure
-             begin
-               FView.Progress(LforIndex, LZipFile.FileCount - 1);
-             end);
+          for LForIndex := 0 to LZipFile.FileCount - 1 do
+          begin
+            LFullFileName := FRootPath + NormalizeFileName(LZipFile.FileName[LforIndex]);
+
+            if not FileToOld(LFullFileName) then
+              Exit(False);
+            FRolledBackFiles.Add(LFullFileName);
+            // View
+            SyncView(
+              procedure
+              begin
+                FView.Progress(LForIndex, LZipFile.FileCount - 1);
+              end);
+          end;
+          LZipFile.ExtractAll(FRootPath);
+
+          // Validacao de hash dos arquivos extraidos (se manifest.json existe)
+          if FVerifyExtracted and (LManifestJson <> '') then
+          begin
+            LManifestObj := TJSONObject.ParseJSONValue(LManifestJson) as TJSONObject;
+            try
+              if LManifestObj <> nil then
+              begin
+                LFilesObj := LManifestObj.GetValue<TJSONObject>('files');
+                if LFilesObj <> nil then
+                begin
+                  for LPair in LFilesObj do
+                  begin
+                    LExpectedHash := LPair.JsonValue.Value;
+                    LExtractedFile := FRootPath + LPair.JsonString.Value;
+                    if FileExists(LExtractedFile) then
+                    begin
+                      LFileHash := THashSHA2.GetHashStringFromFile(LExtractedFile).ToLower;
+                      // Remove prefixo "sha256:" se houver
+                      if LExpectedHash.StartsWith('sha256:') then
+                        LExpectedHash := LExpectedHash.Substring(7);
+                      if not SameText(LFileHash, LExpectedHash) then
+                      begin
+                        SyncMessageError(FConsts.Consts.HashInvalid + LFileHash);
+                        Exit(False);
+                      end;
+                    end;
+                  end;
+                end;
+              end;
+            finally
+              LManifestObj.Free;
+            end;
+          end;
         end;
-       LZipFile.ExtractAll(FRootPath);
+      except
+        on E: Exception do
+        begin
+          // Rollback: restaurar todos os arquivos .old
+          for LFile in FRolledBackFiles do
+          begin
+            LOldFile := LFile + '.old';
+            if FileExists(LOldFile) then
+            begin
+              if FileExists(LFile) then
+                System.SysUtils.DeleteFile(LFile);
+              RenameFile(LOldFile, LFile);
+            end;
+          end;
+          if (E is EZipException) or (E is EFOpenError) then
+          begin
+            // Item 9.7: descarta o arquivo baixado invalido (nao apaga arquivo informado pelo usuario)
+            if FUpdateFile = '' then
+              DeleteFiles;
+            Exit(False);
+          end
+          else
+            raise;
+        end;
       end;
-    except
-      on EZipException do Exit(False);
-      on EFOpenError   do Exit(False);
+    finally
+      LZipFile.Free;
     end;
-  finally
-    LZipFile.Free;
   end;
 end;
 
 function TUpdater.DoUpdate: TUpdateResult;
 begin
-  // Obter informações
+  // Obter informaÃ§Ãµes se vai ser release ou classico com .ini
   if not GetDownloadInfo then
-    if FIsAbort then
-      Exit(TUpdateResult.Abort) else
-    if SyncErrorMessage(FConsts.Consts.ConnectionError) then
-      Exit(TUpdateResult.TryAgain) else
+     if FIsAbort then
+      Exit(TUpdateResult.Abort)
+    else if SyncErrorMessage(FConsts.Consts.ConnectionError) then
+      Exit(TUpdateResult.TryAgain)
+    else
       Exit(TUpdateResult.Fail);
 
   // Download
   if not Download then
     if FIsAbort then
-      Exit(TUpdateResult.Abort) else
-    if SyncErrorMessage(FConsts.Consts.DownloadError) then
-      Exit(TUpdateResult.TryAgain) else
+      Exit(TUpdateResult.Abort)
+    else if SyncErrorMessage(FConsts.Consts.DownloadError) then
+      Exit(TUpdateResult.TryAgain)
+    else
       Exit(TUpdateResult.Fail);
 
   //Unpacking
   if not Unpacking then
     if SyncErrorMessage(FConsts.Consts.CorruptedFilesError) then
-      Exit(TUpdateResult.TryAgain) else
+      Exit(TUpdateResult.TryAgain)
+    else
       Exit(TUpdateResult.Fail);
 
-  // Deleta arquivo .ZIP de atualização
-  DeleteFiles;
+  // Deleta arquivo de atualizaÃ§Ã£o (.zip)
+  if not FIsExe then
+    DeleteFiles;
+
   Done;
-  Result := TUpdateResult.Success;
+  Exit(TUpdateResult.Success);
 end;
 
 procedure TUpdater.Update;
@@ -405,11 +734,35 @@ end;
 
 function TUpdater.GetUpdateFileName: string;
 const
-  ArchiveName = 'Update.zip';
+  ArchiveName   = 'Update';
+  CUpdatesFolder = 'Updates';
+var
+  LExt, LName, LDir: string;
 begin
-  if FUpdateFile = '' then
-    Result := ExtractFileDir(ParamStr(0)) + PathDelim + ArchiveName else
-    Result := FUpdateFile;
+  if FUpdateFile <> '' then
+    Exit(FUpdateFile);
+
+  // Item 9.7: o nome vem sanitizado de FUpdateFileName (asset do release ou URL sem query).
+  // Nunca aceita diretorio nem URL crua: ExtractFileNameFromUrl devolve '' nesses casos.
+  LName := ExtractFileNameFromUrl(FUpdateFileName);
+
+  // Item 10: preserva a extensao (.exe ou .zip) para permitir a deteccao posterior
+  if SameText(ExtractFileExt(LName), '.exe') then
+    LExt := '.exe'
+  else
+  begin
+    LExt := '.zip';
+    if not SameText(ExtractFileExt(LName), LExt) then
+      LName := ArchiveName + LExt;
+  end;
+
+  LDir   := ExtractFileDir(ParamStr(0)) + PathDelim;
+  Result := LDir + LName;
+
+  // O proprio executavel em execucao esta bloqueado para escrita:
+  // nesse caso o download vai para a subpasta Updates.
+  if SameText(Result, ExpandFileName(ParamStr(0))) then
+    Result := LDir + CUpdatesFolder + PathDelim + LName;
 end;
 
 procedure TUpdater.UpdateFromFile(FileName: string);
@@ -421,12 +774,13 @@ begin
     SyncShowView;
     try
       TryAgain := False;
-       repeat
+      repeat
         // Unpacking
         if Unpacking then
-          Done else
+          Done
+        else
           TryAgain := SyncErrorMessage(FConsts.Consts.CorruptedFilesError);
-       until not TryAgain;
+      until not TryAgain;
     finally
       SyncCloseView;
     end;

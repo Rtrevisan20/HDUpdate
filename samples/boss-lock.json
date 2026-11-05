@@ -1,22 +1,12 @@
 {
 	"hash": "d41d8cd98f00b204e9800998ecf8427e",
-	"updated": "2025-12-14T17:56:29.791672-03:00",
+	"updated": "2026-10-31T19:12:16-03:00",
 	"installedModules": {
-		"github.com/rtrevisan20/hdmessagedlg": {
-			"name": "hdmessagedlg",
-			"version": "1.2.3",
-			"hash": "4987141b864145a0c2e7d329f9b96e4d",
-			"artifacts": {},
-			"failed": false,
-			"changed": false
-		},
 		"https://github.com/rtrevisan20/hdmessagedlg": {
-			"name": "hdmessagedlg",
-			"version": "1.2.3",
-			"hash": "4987141b864145a0c2e7d329f9b96e4d",
-			"artifacts": {},
-			"failed": false,
-			"changed": false
+			"name": "github_com_rtrevisan20_hdmessagedlg",
+			"version": "1.2.4",
+			"hash": "2be364d356908dbfd75a081517b9ac9d",
+			"artifacts": {}
 		}
 	}
 }

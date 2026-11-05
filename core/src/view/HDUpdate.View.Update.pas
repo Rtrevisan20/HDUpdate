@@ -4,7 +4,7 @@
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -95,8 +95,12 @@ type
     procedure SetModel        (Model: IUpdateModel);
     procedure SetUpdateState  (Value: TUpdateState);
     procedure SetUpdateLog    (aLog: string);
+    // Item 9.16: textos estaticos do form (.fmx) localizados via consts
+    procedure SetCancelText   (const Value: string);
+    procedure SetWaitingText  (const Value: string);
     procedure ShowMessage     (Message: string);
     function  ShowErrorMessage(Message: string): Boolean;
+    procedure ShowMessageError(Message: string);
     procedure Progress        (Progress, Length: Integer);
     procedure IUpdateView.Close = ViewClose;
     procedure IUpdateView.Show  = ViewShow;
@@ -168,6 +172,16 @@ begin
   LabelState.Text := Value;
 end;
 
+procedure TViewUpdate.SetCancelText(const Value: string);
+begin
+  ButtonCancel.Text := Value;
+end;
+
+procedure TViewUpdate.SetWaitingText(const Value: string);
+begin
+  LabelWaiting.Text := Value;
+end;
+
 procedure TViewUpdate.SetUpdateState(Value: TUpdateState);
 begin
   case Value of
@@ -200,9 +214,9 @@ end;
 
 function TViewUpdate.ShowErrorMessage(Message: string): Boolean;
 begin
-  FConsts := TFactoryConsts.New.Consts;
+  FConsts := TFactoryConsts.Global.Consts;
   Msg     := THDMessageDlg.New;
-  Result  := Msg
+  Result  := MSG
               .MsgTitle(FConsts.MsgTitle)
               .MsgQuestion('')
               .MsgBody(Message)
@@ -213,13 +227,26 @@ end;
 
 procedure TViewUpdate.ShowMessage(Message: string);
 begin
-  FConsts := TFactoryConsts.New.Consts;
+  FConsts := TFactoryConsts.Global.Consts;
   Msg := THDMessageDlg.New;
   Msg
     .MsgTitle(FConsts.MsgTitle)
     .MsgQuestion('')
     .MsgBody(Message)
     .MsgIcon(TiMessage)
+    .MsgType(TyOK)
+    .DisplayMessage;
+end;
+
+procedure TViewUpdate.ShowMessageError(Message: string);
+begin
+  FConsts := TFactoryConsts.Global.Consts;
+  Msg     := THDMessageDlg.New;
+  MSG
+    .MsgTitle(FConsts.MsgTitle)
+    .MsgQuestion('')
+    .MsgBody(Message)
+    .MsgIcon(TiError)
     .MsgType(TyOK)
     .DisplayMessage;
 end;

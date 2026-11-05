@@ -1,10 +1,10 @@
-(*
+ï»¿(*
 ***********************************************************************
   HDUpdate v0.0.1
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -36,15 +36,15 @@ uses
   IdComponent,
   HDUpdate.Core.Commons,
   HDUpdate.Core.Types,
-  System.Net.HttpClient;
+  System.Net.HttpClient,
+  System.DateUtils;
 
 type
 
   IModelInternet = interface
     ['{F2E48258-75D8-494C-8987-8D9E65538030}']
     function GetVersionUpdate(out AVersion: TFileVersion): boolean;
-    function GetUpdateURL: string;
-
+    function GetURLUpdateINI: string;
     function DowloadFile(aDownURL, APath: string; ADownloadProgress: TReceiveDataEventRef): Boolean;
 
     function UpdateLog : string;
@@ -63,6 +63,13 @@ type
     property  GitRepo     : String   write SetGitRepo;
     property  GitUserName : String   write SetGitUserName;
     property  GitIni      : String   write SetGitIni;
+
+    // GitHub Releases (Item 8)
+    function GetLatestRelease(out ARelease: TGitHubRelease): Boolean;
+    function GetReleaseAssetUrl(const ARelease: TGitHubRelease; const AAssetName: string;
+                                out AUrl: string; out ADigest: string;
+                                const AType: TAssetType = TAssetType.atAuto): Boolean;
+
   end;
 
   IModelIternetFactory = interface

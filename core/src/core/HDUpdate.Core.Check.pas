@@ -1,10 +1,10 @@
-(*
+ï»¿(*
   ***********************************************************************
   HDUpdate v0.0.1
   ***********************
   Por Renato Trevisan
   ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
   ***********************************************************************
   MIT License
 
@@ -42,19 +42,26 @@ uses
 type
   TModelCheck = class(TInterfacedObject, IModelCheck)
   private
-    FGitAuth      : Boolean;
-    FIniKeyName   : String;
-    FGitToken     : String;
-    FGitRepo      : String;
-    FGitUserName  : String;
-    FGitPath      : String;
-    FPngRes       : String;
-    FRootPath     : String;
-    FTitulo       : String;
-    FModelInternet: IModelInternet;
-    FVersionAtual : TFileVersion;
-    FExtractNames : TStringArray;
-    FUpdateInfo   : TUpdateInfo;
+    FGitAuth          : Boolean;
+    FIniKeyName       : String;
+    FGitToken         : String;
+    FGitRepo          : String;
+    FGitUserName      : String;
+    FGitPath          : String;
+    FPngRes           : String;
+    FRootPath         : String;
+    FTitulo           : String;
+    FExeUpdateApp     : string;
+    FKillTaskApp      : TFileName;
+    FModelInternet    : IModelInternet;
+    FVersionAtual     : TFileVersion;
+    FExtractNames     : TStringArray;
+    FUseReleases      : Boolean;
+    FRequireAssetHash : Boolean;
+    FReleaseAssetName : string;
+    FAssetType        : TAssetType;
+    FUpdateInfo       : TUpdateInfo;
+    FVerifyExtractedFiles  : Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -65,17 +72,24 @@ type
     function  GetVersionUpdate  : TFileVersion;
     function  CheckUpdate       : boolean;
     (*=================================================================*)
-    function ActualVersion(aActualVersion : TFileVersion): IModelCheck;
-    function IniKeyName   (aIniKeyName    : String): IModelCheck;
-    function GitUserName  (aGitUserName   : String): IModelCheck;
-    function GitRepo      (aGitRepo       : String): IModelCheck;
-    function GitIni       (aGitIni        : String): IModelCheck;
-    function GitAuth      (aGitAuth       : Boolean = False): IModelCheck;
-    function GitToken     (aGitToken      : String): IModelCheck;
-    function RootPath     (aRootPath      : String): IModelCheck;
-    function Titulo       (aTitulo        : String = ''): IModelCheck;
-    function PngResource  (aPngResource   : String): IModelCheck;
-    function ExtractNames (aExtractNames  : TStringArray): IModelCheck;
+    function ActualVersion        (aActualVersion : TFileVersion)     : IModelCheck;
+    function GitAuth              (aGitAuth       : Boolean = False)  : IModelCheck;
+    function IniKeyName           (aIniKeyName    : String)           : IModelCheck;
+    function GitToken             (aGitToken      : String)           : IModelCheck;
+    function GitRepo              (aGitRepo       : String)           : IModelCheck;
+    function GitUserName          (aGitUserName   : String)           : IModelCheck;
+    function GitIni               (aGitIni        : String)           : IModelCheck;
+    function RootPath             (aRootPath      : String)           : IModelCheck;
+    function Titulo               (aTitulo        : String = '')      : IModelCheck;
+    function PngResource          (aPngResource   : String)           : IModelCheck;
+    function ExtractNames         (aExtractNames  : TStringArray)     : IModelCheck;
+    function ExeUpdateApp         (aExeUpdateApp  : string= 'Update.exe'): IModelCheck;
+    function KillTaskApp          (aKillTaskApp   : TFileName)        : IModelCheck;
+    function UseReleases          (aValue         : Boolean = False)  : IModelCheck;
+    function RequireAssetHash     (aValue         : Boolean = False)  : IModelCheck;
+    function ReleaseAssetName     (aName          : string)           : IModelCheck;
+    function VerifyExtractedFiles (aValue         : Boolean = False)  : IModelCheck;
+    function AssetType            (aValue         : TAssetType = TAssetType.atAuto): IModelCheck;
 
     function UpdateInfo : TUpdateInfo;
   end;
@@ -92,14 +106,40 @@ uses
 function TModelCheck.CheckUpdate: boolean;
 var
   LVersion: TFileVersion;
+  LRelease: TGitHubRelease;
+  LUrl, LDigest: string;
 begin
   if FIsChecking then Exit(False);
   FIsChecking := True;
    try
-    FModelInternet.GetVersionUpdate(FVersionAtual);
-    if FVersionAtual < LVersion then
-     Result := True else
-     Result := False;
+    if FUseReleases then
+    begin
+      if FModelInternet.GetLatestRelease(LRelease) then
+      begin
+        LVersion := LRelease.GetVersion;
+        if LVersion > FVersionAtual then
+        begin
+          if FModelInternet.GetReleaseAssetUrl(LRelease, FUpdateInfo.ReleaseAssetName, LUrl, LDigest, FUpdateInfo.AssetType) then
+          begin
+            FUpdateInfo.DownloadUrl     := LUrl;
+            FUpdateInfo.ExpectedSHA256  := LDigest;
+            Result := True;
+          end
+          else
+            Result := False;
+        end
+        else
+          Result := False;
+      end
+      else
+        Result := False;
+    end
+    else
+    begin
+      if FModelInternet.GetVersionUpdate(LVersion) then
+       Result := LVersion > FVersionAtual else
+       Result := False;
+    end;
    finally
      FIsChecking := False;
    end;
@@ -107,13 +147,27 @@ end;
 
 constructor TModelCheck.Create;
 begin
-  FModelInternet := TModelIternetFactory.New.Internet;
-  FUpdateInfo    := Default(TUpdateInfo);
+  FModelInternet                    := TModelIternetFactory.New.Internet;
+  FUpdateInfo                       := Default(TUpdateInfo);
+  FUpdateInfo.GitAuth               := False;
+  FUpdateInfo.ExeUpdateApp          := 'Update.exe';
+  FUpdateInfo.UseReleases           := False;
+  FUpdateInfo.RequireAssetHash      := False;
+  FUpdateInfo.VerifyExtractedFiles  := False;
+  FUpdateInfo.AssetType             := TAssetType.atAuto;
+  FVerifyExtractedFiles             := False;
 end;
 
 destructor TModelCheck.Destroy;
 begin
   inherited;
+end;
+
+function TModelCheck.ExeUpdateApp(aExeUpdateApp: string= 'Update.exe'): IModelCheck;
+begin
+  Result                    := Self;
+  FExeUpdateApp             := aExeUpdateApp;
+  FUpdateInfo.ExeUpdateApp  := aExeUpdateApp;
 end;
 
 function TModelCheck.ExtractNames(aExtractNames: TStringArray): IModelCheck;
@@ -126,9 +180,10 @@ end;
 function TModelCheck.GetVersionUpdate: TFileVersion;
 begin
   FModelInternet.GetVersionUpdate(Result);
+  FUpdateInfo.VersionUpdate := Result.ToString;
 end;
 
-function TModelCheck.GitAuth(aGitAuth: Boolean): IModelCheck;
+function TModelCheck.GitAuth(aGitAuth: Boolean = False): IModelCheck;
 begin
   Result                  := Self;
   FGitAuth                := aGitAuth;
@@ -176,6 +231,13 @@ begin
   FUpdateInfo.IniKeyName    := aIniKeyName;
 end;
 
+function TModelCheck.KillTaskApp(aKillTaskApp: TFileName): IModelCheck;
+begin
+  Result                  := Self;
+  FKillTaskApp            := aKillTaskApp;
+  FUpdateInfo.KillTaskApp := aKillTaskApp;
+end;
+
 class function TModelCheck.New: IModelCheck;
 begin
   Result := Self.Create;
@@ -195,7 +257,7 @@ begin
   FUpdateInfo.RootPath  := aRootPath;
 end;
 
-function TModelCheck.Titulo(aTitulo: String): IModelCheck;
+function TModelCheck.Titulo(aTitulo: String = ''): IModelCheck;
 begin
   Result              := Self;
   FTitulo             := aTitulo;
@@ -209,25 +271,56 @@ begin
     procedure
      var
       LVersion: TFileVersion;
+      LRelease: TGitHubRelease;
+      LUrl, LDigest: string;
     begin
+     LVersion := aVersion;
      FIsChecking := True;
-      try
-        if FModelInternet.GetVersionUpdate(LVersion) then
+       try
+        if FUseReleases then
+        begin
+          if FModelInternet.GetLatestRelease(LRelease) then
           begin
-            TThread.Synchronize(nil,
-             procedure
+            LVersion := LRelease.GetVersion;
+            if LVersion > aVersion then
+            begin
+              if FModelInternet.GetReleaseAssetUrl(LRelease, FUpdateInfo.ReleaseAssetName, LUrl, LDigest, FUpdateInfo.AssetType) then
               begin
-                if LVersion > aVersion then
-                  aUpdateCheckProc(True, LVersion) else
-                  aUpdateCheckProc(False, LVersion);
-              end);
-          end;
-      finally
-        FIsChecking := False;
-      end;
-    end).Start;
+                FUpdateInfo.DownloadUrl     := LUrl;
+                FUpdateInfo.ExpectedSHA256  := LDigest;
+                TThread.Synchronize(nil,
+                 procedure
+                  begin
+                    aUpdateCheckProc(True, LVersion);
+                  end);
+              end
+              else
+                TThread.Synchronize(nil, procedure begin aUpdateCheckProc(False, LVersion); end);
+            end
+            else
+              TThread.Synchronize(nil, procedure begin aUpdateCheckProc(False, LVersion); end);
+          end
+          else
+            TThread.Synchronize(nil, procedure begin aUpdateCheckProc(False, LVersion); end);
+        end
+        else
+        begin
+          if FModelInternet.GetVersionUpdate(LVersion) then
+            begin
+              TThread.Synchronize(nil,
+               procedure
+                begin
+                  if LVersion > aVersion then
+                    aUpdateCheckProc(True, LVersion) else
+                    aUpdateCheckProc(False, LVersion);
+                end);
+            end;
+        end;
+       finally
+         FIsChecking := False;
+       end;
+     end).Start;
 end;
-
 function TModelCheck.UpdateInfo: TUpdateInfo;
 begin
   Result := FUpdateInfo;
@@ -238,6 +331,42 @@ begin
   Result                    := Self;
   FVersionAtual             := aActualVersion;
   FUpdateInfo.ActualVersion := aActualVersion;
+end;
+
+
+function TModelCheck.UseReleases(aValue: Boolean = False): IModelCheck;
+begin
+  Result := Self;
+  FUseReleases := aValue;
+  FUpdateInfo.UseReleases := aValue;
+end;
+
+function TModelCheck.RequireAssetHash(aValue: Boolean = False): IModelCheck;
+begin
+  Result := Self;
+  FRequireAssetHash := aValue;
+  FUpdateInfo.RequireAssetHash := aValue;
+end;
+
+function TModelCheck.ReleaseAssetName(aName: string): IModelCheck;
+begin
+  Result := Self;
+  FReleaseAssetName := aName;
+  FUpdateInfo.ReleaseAssetName := aName;
+end;
+
+function TModelCheck.VerifyExtractedFiles(aValue: Boolean = False): IModelCheck;
+begin
+  Result := Self;
+  FVerifyExtractedFiles := aValue;
+  FUpdateInfo.VerifyExtractedFiles := aValue;
+end;
+
+function TModelCheck.AssetType(aValue: TAssetType = TAssetType.atAuto): IModelCheck;
+begin
+  Result := Self;
+  FAssetType := aValue;
+  FUpdateInfo.AssetType := aValue;
 end;
 
 end.

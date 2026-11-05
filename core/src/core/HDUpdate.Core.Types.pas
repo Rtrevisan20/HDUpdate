@@ -1,10 +1,10 @@
-(*
+﻿(*
 ***********************************************************************
   HDUpdate v0.0.1
 ***********************
   Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualiza��es automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -35,11 +35,17 @@ interface
 
 uses
   System.Classes,
-  System.SysUtils;
+  System.SysUtils,
+  System.DateUtils,
+  System.Generics.Collections;
 
 type
   TUpdateState = (Waiting, Downloading, Unpacking, Done);
   TStringArray = array of string;
+
+  // Tipo de asset preferido para download (Item 10)
+  TAssetType = (atZip, atExe, atAuto); // atAuto = prefere .zip, fallback .exe
+
   TFileVersion = record
   public
     Major   : Word;
@@ -61,18 +67,54 @@ type
 
   TUpdateInfo = record
     // Main
-    ExtractNames  : TStringArray; //Nome do exexutavel a ser extraido, ou parametro &ALL para extrair tudo..
-    IniKeyName    : string;
-    GitUserName   : string;
-    GitRepo       : string;
-    GitIni        : string;
-    GitAuth       : boolean;
-    GitToken      : string;
-    ActualVersion : TFileVersion;
+    ExtractNames    : TStringArray; //Nome do exexutavel a ser extraido, ou parametro &ALL para extrair tudo..
+    IniKeyName      : string;
+    GitUserName     : string;
+    GitRepo         : string;
+    GitIni          : string;
+    GitAuth         : boolean;
+    GitToken        : string;
+    ActualVersion   : TFileVersion;
     // Optional
-    RootPath      : string;
-    Titulo        : string;
-    PngResource   : string;
+    RootPath        : string;
+    Titulo          : string;
+    PngResource     : string;
+    ExeUpdateApp    : string;
+    KillTaskApp     : TFileName;
+    // Releases (Item 8)
+    DownloadUrl     : string;
+    ExpectedSHA256  : string;
+    RequireAssetHash: Boolean;
+    VerifyExtractedFiles: Boolean;
+    UseReleases     : Boolean;      // Item 8: usa GitHub Releases API
+    ReleaseAssetName: string;       // Item 8: nome do asset específico
+    // Asset type preference (Item 10)
+    AssetType       : TAssetType;
+    VersionUpdate   : string;
+  end;
+
+
+  // GitHub Release types (Item 8)
+  TGitHubAsset = record
+    Id                : Int64;   // Item 9.4: id do asset na API
+    Name              : string;
+    BrowserDownloadUrl: string;  // URL web (404 em repositorio privado)
+    ApiAssetUrl       : string;  // Item 9.4: endpoint da API (funciona com token)
+    DigestSHA256      : string;
+    Size              : Int64;
+    function IsEmpty: Boolean;
+  end;
+
+  TGitHubRelease = record
+    TagName     : string;
+    Name        : string;
+    Body        : string;
+    Prerelease  : Boolean;
+    Draft       : Boolean;
+    Assets      : TArray<TGitHubAsset>;
+    PublishedAt : TDateTime;
+    function FindAsset(const AName: string; const AType: TAssetType = TAssetType.atAuto): TGitHubAsset;
+    function GetVersion: TFileVersion;
   end;
 
 {$IFDEF MSWINDOWS}
@@ -81,9 +123,9 @@ function GetFileVersion(FileName: string; out Version: TFileVersion): Boolean;
 
 implementation
 
-{$IFDEF MSWINDOWS}
-uses WinApi.Windows;
-{$ENDIF}
+uses
+  WinApi.Windows,
+  System.Hash;
 
 
 {$IFDEF MSWINDOWS}
@@ -195,6 +237,65 @@ end;
 function TFileVersion.ToString: string;
 begin
   Result := Format('%d.%d.%d.%d', [Major, Minor, Release, Build]);
+end;
+
+
+{ TGitHubAsset }
+
+function TGitHubAsset.IsEmpty: Boolean;
+begin
+  Result := (Name = '') and (BrowserDownloadUrl = '') and (ApiAssetUrl = '') and
+            (DigestSHA256 = '') and (Size = 0);
+end;
+
+{ TGitHubRelease }
+
+function TGitHubRelease.FindAsset(const AName: string; const AType: TAssetType): TGitHubAsset;
+var
+  LAsset: TGitHubAsset;
+  LPreferredExt: string;
+begin
+  Result := Default(TGitHubAsset);
+  if Length(Assets) = 0 then Exit;
+
+  if AName <> '' then
+  begin
+    for LAsset in Assets do
+      if SameText(LAsset.Name, AName) then Exit(LAsset);
+    Exit;
+  end;
+
+  // Define extensão preferida baseado no AssetType
+  case AType of
+    TAssetType.atZip:  LPreferredExt := '.zip';
+    TAssetType.atExe:  LPreferredExt := '.exe';
+    TAssetType.atAuto: LPreferredExt := '.zip'; // default prefere .zip
+  end;
+
+  // Procura pela extensão preferida
+  for LAsset in Assets do
+    if LAsset.Name.EndsWith(LPreferredExt, True) then Exit(LAsset);
+
+  // Fallback: se atAuto, tenta a outra extensão
+  if AType = TAssetType.atAuto then
+  begin
+    LPreferredExt := '.exe';
+    for LAsset in Assets do
+      if LAsset.Name.EndsWith(LPreferredExt, True) then Exit(LAsset);
+  end;
+
+  // Último recurso: primeiro asset
+  Result := Assets[0];
+end;
+
+function TGitHubRelease.GetVersion: TFileVersion;
+var
+  LTag: string;
+begin
+  LTag := TagName;
+  if LTag.StartsWith('v', True) then
+    LTag := LTag.Substring(1);
+  Result := TFileVersion.Create(LTag);
 end;
 
 end.

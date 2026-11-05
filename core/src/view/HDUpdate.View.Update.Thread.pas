@@ -1,10 +1,10 @@
-(*
+ï»¿(*
   ***********************************************************************
   HDUpdate v0.0.1
   ***********************
   Por Renato Trevisan
   ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+  Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
   ***********************************************************************
   MIT License
 
@@ -59,8 +59,9 @@ procedure TFmxUpdateThread.Work;
 var
   FModel: TUpdater;
   FView : TCustomForm;
+  LRestart: Boolean;
 begin
-  // É necessário aguardar o início do loop principal
+  // Ã‰ necessÃ¡rio aguardar o inÃ­cio do loop principal
   while ApplicationState = TApplicationState.None do Sleep(0);
   Sync(
     procedure
@@ -77,22 +78,32 @@ begin
       FModel.UpdateFromFile(FileName) else
       FModel.Update;
   finally
+    LRestart := Assigned(FModel) and FModel.RestartApp;
     FModel.Free;
+    // Garante que o terminador do Application (AddTerminateProc/TUpdateThread.IsDone)
+    // seja liberado ANTES de qualquer Application.Terminate / FView.Close.
+    // Sem isso, IsUpdating fica True e CallTerminateProcs cancela o encerramento do FMX,
+    // deixando a instancia aberta mesmo apos o KillTaskApp.
+    IsUpdating := False;
     if FView <> Application.MainForm then
       Sync(procedure
        begin
         FView.Free;
        end)
     else
-     begin
-      IsUpdating := False;
       Sync(
        procedure
         begin
          FView.Close;
         end);
-     end;
   end;
+
+  if LRestart then
+    Sync(
+     procedure
+      begin
+        Application.Terminate;
+      end);
 end;
 
 end.

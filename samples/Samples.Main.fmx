@@ -2,67 +2,160 @@ object Form1: TForm1
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
-  Caption = 'Exemplo de Updates'
-  ClientHeight = 99
-  ClientWidth = 321
+  Caption = 'HDUpdate - Exemplo de Atualizacao'
+  ClientHeight = 300
+  ClientWidth = 428
   Position = MainFormCenter
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
+  object lblVersion: TLabel
+    Align = Top
+    StyledSettings = [Family, Style, FontColor]
+    Margins.Left = 8.000000000000000000
+    Position.X = 8.000000000000000000
+    Size.Width = 420.000000000000000000
+    Size.Height = 26.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Size = 20.000000000000000000
+    TextSettings.HorzAlign = Center
+    TextSettings.VertAlign = Leading
+    Text = 'HDUpdate - Exemplos de Atualizacao'
+    TabOrder = 0
+  end
   object btnCheckVersion: TButton
     Position.X = 8.000000000000000000
-    Position.Y = 30.000000000000000000
-    Size.Width = 145.000000000000000000
-    Size.Height = 25.000000000000000000
+    Position.Y = 46.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 0
-    Text = 'Verificar Vers'#227'o'
+    TabOrder = 3
+    Text = 'Verificar Versao (ini)'
     TextSettings.Trimming = None
     OnClick = btnCheckVersionClick
   end
-  object lblVersion: TLabel
-    Align = Top
-    Margins.Left = 8.000000000000000000
-    Position.X = 8.000000000000000000
-    Size.Width = 313.000000000000000000
-    Size.Height = 17.000000000000000000
-    Size.PlatformDefault = False
-    TextSettings.VertAlign = Leading
-    Text = 'Vers'#227'o dispon'#237'vel no Github: '
-    TabOrder = 5
-  end
   object btnUpdateNow: TButton
-    Position.X = 161.000000000000000000
-    Position.Y = 30.000000000000000000
-    Size.Width = 145.000000000000000000
-    Size.Height = 25.000000000000000000
+    Position.X = 216.000000000000000000
+    Position.Y = 46.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 7
-    Text = 'Atualizar Agora'
+    TabOrder = 4
+    Text = 'Atualizar Agora (ini)'
     TextSettings.Trimming = None
     OnClick = btnUpdateNowClick
   end
-  object btnUpdateStandalone: TButton
-    Position.X = 161.000000000000000000
-    Position.Y = 63.000000000000000000
-    Size.Width = 145.000000000000000000
-    Size.Height = 25.000000000000000000
+  object btnUpdateReleases: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 122.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Text = 'Atualizar via Releases'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateReleasesClick
+  end
+  object btnUpdateWithHash: TButton
+    Position.X = 216.000000000000000000
+    Position.Y = 122.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 6
-    Text = 'Atualizar Standalone'
+    Text = 'Releases + Hash Verify'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateWithHashClick
+  end
+  object btnUpdateStandalone: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 198.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = 'Standalone'
     TextSettings.Trimming = None
     OnClick = btnUpdateStandaloneClick
   end
-  object btnUpdateResource: TButton
-    Position.X = 8.000000000000000000
-    Position.Y = 63.000000000000000000
-    Size.Width = 145.000000000000000000
-    Size.Height = 25.000000000000000000
+  object btnLanguagePT: TButton
+    Position.X = 216.000000000000000000
+    Position.Y = 198.000000000000000000
+    Size.Width = 95.000000000000000000
+    Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 8
-    Text = 'Atualizar Resource'
+    Text = 'pt-BR'
     TextSettings.Trimming = None
-    OnClick = btnUpdateResourceClick
+    OnClick = btnLanguagePTClick
+  end
+  object btnLanguageEN: TButton
+    Position.X = 321.000000000000000000
+    Position.Y = 198.000000000000000000
+    Size.Width = 95.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    Text = 'en-US'
+    TextSettings.Trimming = None
+    OnClick = btnLanguageENClick
+  end
+  object btnUpdateExeAsset: TButton
+    Position.X = 7.000000000000000000
+    Position.Y = 160.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Text = 'Instalador .exe (atExe)'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateExeAssetClick
+  end
+  object btnUpdateZipAsset: TButton
+    Position.X = 216.000000000000000000
+    Position.Y = 160.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 11
+    Text = 'Forcar .zip (atZip)'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateZipAssetClick
+  end
+  object lblInfo: TLabel
+    Align = Bottom
+    Margins.Left = 8.000000000000000000
+    Position.X = 8.000000000000000000
+    Position.Y = 270.000000000000000000
+    Size.Width = 420.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Center
+    TextSettings.VertAlign = Leading
+    Text = 'Teste: Releases + SHA-256 + i18n + Hash Verify + Instalador .exe'
+    TabOrder = 12
+  end
+  object btnUpdateHashConsole: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 84.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = 'Update + Hash Verify Console (ini)'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateHashConsoleClick
+  end
+  object btnUpdateHashSamples: TButton
+    Position.X = 216.000000000000000000
+    Position.Y = 84.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = 'Update + Hash Verify Samples (ini)'
+    TextSettings.Trimming = None
+    OnClick = btnUpdateHashSamplesClick
   end
 end

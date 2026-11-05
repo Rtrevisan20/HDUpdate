@@ -1,10 +1,10 @@
-(*
+ï»¿(*
 ***********************************************************************
-  HDUpdate v0.0.1
+HDUpdate v0.0.1
 ***********************
-  Por Renato Trevisan
+Por Renato Trevisan
 ***********************
-  Proposta: Fazer atualizações automatizadas usando a API do GitHub.
+Proposta: Fazer atualizaÃ§Ãµes automatizadas usando a API do GitHub.
 ***********************************************************************
 MIT License
 
@@ -43,19 +43,27 @@ uses
 type
   IHDUpdate = interface
     ['{FDBCC0E2-D4BA-49CF-86AE-1FBB55341C1D}']
-    function ActualVersion(aActualVersion : string)           : IHDUpdate;
-    function GitAuth      (aGitAuth       : Boolean = False)  : IHDUpdate;
-    function IniKeyName   (aIniKeyName    : String)           : IHDUpdate;
-    function GitToken     (aGitToken      : String)           : IHDUpdate;
-    function GitRepo      (aGitRepo       : String)           : IHDUpdate;
-    function GitUserName  (aGitUserName   : String)           : IHDUpdate;
-    function GitIni       (aGitIni        : String)           : IHDUpdate;
-    function RootPath     (aRootPath      : String)           : IHDUpdate;
-    function Titulo       (aTitulo        : String = '')      : IHDUpdate;
-    function PngResource  (aPngResource   : String)           : IHDUpdate;
-    function ExeUpdateApp (aValue: string = 'Update.exe')     : IHDUpdate;
-    function ExtractNames (aExtractNames  : TStringArray)     : IHDUpdate;
-    function KillTaskApp  (aKillApp       : TFileName)        : IHDUpdate;
+    function ActualVersion        (aActualVersion : string)           : IHDUpdate;
+    function GitAuth              (aGitAuth       : Boolean = False)  : IHDUpdate;
+    function IniKeyName           (aIniKeyName    : String)           : IHDUpdate;
+    function GitToken             (aGitToken      : String)           : IHDUpdate;
+    function GitRepo              (aGitRepo       : String)           : IHDUpdate;
+    function GitUserName          (aGitUserName   : String)           : IHDUpdate;
+    function GitIni               (aGitIni        : String)           : IHDUpdate;
+    function RootPath             (aRootPath      : String)           : IHDUpdate;
+    function Titulo               (aTitulo        : String = '')      : IHDUpdate;
+    function PngResource          (aPngResource   : String)           : IHDUpdate;
+    function ExeUpdateApp         (aValue         : string = 'Update.exe'): IHDUpdate;
+    function ExtractNames         (aExtractNames  : TStringArray)     : IHDUpdate;
+    function KillTaskApp          (aKillApp       : TFileName)        : IHDUpdate;
+    function UseReleases          (aValue         : Boolean = False)  : IHDUpdate;
+    function RequireAssetHash     (aValue         : Boolean = False)  : IHDUpdate;
+    function ReleaseAssetName     (aName          : string)           : IHDUpdate;
+    function Language             (const ALanguage: string)           : IHDUpdate;
+    function VerifyExtractedFiles (aValue         : Boolean = False)  : IHDUpdate;
+    function AssetType            (aValue : TAssetType = TAssetType.atAuto): IHDUpdate;
+
+    (*================================================================================*)
     function GetVersionUpdate                                 : string;
     function GetUpdate                                        : boolean;
     procedure ThreadUpdate;
@@ -65,43 +73,58 @@ type
 
   THDUpdate = class(TInterfacedObject, IHDUpdate)
   private
-    FIniKeyName     : String;
-    FGitToken       : String;
-    FGitRepo        : String;
-    FGitUserName    : String;
-    FGitPath        : String;
-    FRootPath       : String;
-    FTitulo         : String;
-    FPngRes         : String;
-    FGitAuth        : Boolean;
-    FExtractNames   : TStringArray;
-    FActualVersion  : string;
-    FKillApp        : TFileName;
-    FExeUpdateApp   : string;
-    FModelCheck     : IModelCheck;
-    FConsts         : IMessageConsts;
-    MSG             : iHDMessageDlg;
-    procedure Check(UpdateAviable: Boolean; Version: TFileVersion);
+    FIniKeyName           : String;
+    FGitToken             : String;
+    FGitRepo              : String;
+    FGitUserName          : String;
+    FGitPath              : String;
+    FRootPath             : String;
+    FTitulo               : String;
+    FPngRes               : String;
+    FGitAuth              : Boolean;
+    FExtractNames         : TStringArray;
+    FActualVersion        : string;
+    FKillApp              : TFileName;
+    FExeUpdateApp         : string;
+    FUseReleases          : Boolean;
+    FRequireAssetHash     : Boolean;
+    FReleaseAssetName     : string;
+    FAssetType            : TAssetType;
+    FLanguage             : string;
+    FVerifyExtractedFiles : Boolean;
+    FModelCheck           : IModelCheck;
+    FFactoryConsts        : IFactoryConsts;
+    FMessages             : IMessageConsts;
+    MSG                   : iHDMessageDlg;
+    procedure UpdateProc(UpdateAviable: Boolean; Version: TFileVersion);
     procedure CheckStandalone(UpdateAviable: Boolean; Version: TFileVersion);
   public
     constructor Create;
     destructor Destroy; override;
     class function New: IHDUpdate;
-    function ActualVersion(aActualVersion : string)           : IHDUpdate;
-    function GitAuth      (aGitAuth       : Boolean = False)  : IHDUpdate;
-    function IniKeyName   (aIniKeyName    : String)           : IHDUpdate;
-    function GitToken     (aGitToken      : String)           : IHDUpdate;
-    function GitRepo      (aGitRepo       : String)           : IHDUpdate;
-    function GitUserName  (aGitUserName   : String)           : IHDUpdate;
-    function GitIni       (aGitIni        : String)           : IHDUpdate;
-    function RootPath     (aRootPath      : String)           : IHDUpdate;
-    function Titulo       (aTitulo        : String = '')      : IHDUpdate;
-    function PngResource  (aPngResource   : String)           : IHDUpdate;
-    function ExeUpdateApp (aValue: string = 'Update.exe')     : IHDUpdate;
-    function ExtractNames (aExtractNames  : TStringArray)     : IHDUpdate;
-    function KillTaskApp  (aKillApp: TFileName)               : IHDUpdate;
-    function GetVersionUpdate                                 : string;
-    function GetUpdate                                        : boolean;
+    function ActualVersion        (aActualVersion : string)           : IHDUpdate;
+    function GitAuth              (aGitAuth       : Boolean = False)  : IHDUpdate;
+    function IniKeyName           (aIniKeyName    : String)           : IHDUpdate;
+    function GitToken             (aGitToken      : String)           : IHDUpdate;
+    function GitRepo              (aGitRepo       : String)           : IHDUpdate;
+    function GitUserName          (aGitUserName   : String)           : IHDUpdate;
+    function GitIni               (aGitIni        : String)           : IHDUpdate;
+    function RootPath             (aRootPath      : String)           : IHDUpdate;
+    function Titulo               (aTitulo        : String = '')      : IHDUpdate;
+    function PngResource          (aPngResource   : String)           : IHDUpdate;
+    function ExeUpdateApp         (aValue         : string = 'Update.exe'): IHDUpdate;
+    function ExtractNames         (aExtractNames  : TStringArray)     : IHDUpdate;
+    function KillTaskApp          (aKillApp       : TFileName)        : IHDUpdate;
+    function UseReleases          (aValue         : Boolean = False)  : IHDUpdate;
+    function RequireAssetHash     (aValue         : Boolean = False)  : IHDUpdate;
+    function ReleaseAssetName     (aName          : string)           : IHDUpdate;
+    function Language             (const ALanguage: string)           : IHDUpdate;
+    function VerifyExtractedFiles (aValue         : Boolean = False)  : IHDUpdate;
+    function AssetType            (aValue : TAssetType = TAssetType.atAuto): IHDUpdate;
+
+
+    function GetVersionUpdate                                         : string;
+    function GetUpdate                                                : boolean;
     procedure UpdateNow;
     procedure ThreadUpdate;
     procedure Standalone;
@@ -125,60 +148,63 @@ begin
   FModelCheck.ActualVersion(TFileVersion.Create(aActualVersion));
 end;
 
-procedure THDUpdate.Check(UpdateAviable: Boolean; Version: TFileVersion);
+procedure THDUpdate.UpdateProc(UpdateAviable: Boolean; Version: TFileVersion);
 begin
   MSG     := THDMessageDlg.New;
-  FConsts := TFactoryConsts.New.Consts;
- if UpdateAviable then
-  begin
-   if
-    MSG.MsgTitle(FConsts.MsgTitle)
-     .MsgQuestion(FConsts.MsgQuestion)
-     .MsgBody(Format(FConsts.MsgBodyUpdateVersion + FConsts.Version, [Version.ToString]))
-     .MsgIcon(TiQuestion)
-     .MsgType(TyQuestion)
-     .DisplayQuestion then
+  FMessages := FFactoryConsts.Consts;
 
-    HDUpdate.View.Utils.FMXUpdate(FModelCheck.UpdateInfo);
-  end else
-   MSG.MsgTitle(FConsts.MsgTitle)
-    .MsgQuestion('')
-    .MsgBody(Format(FConsts.MsgBodyLastVersion + FConsts.Version, [Version.ToString]))
-    .MsgIcon(TiMessage)
-    .MsgType(TyOK)
-    .DisplayMessage;
-end;
-
-procedure THDUpdate.CheckStandalone(UpdateAviable: Boolean; Version: TFileVersion);
-begin
-  MSG     := THDMessageDlg.New;
-  FConsts := TFactoryConsts.New.Consts;
- if UpdateAviable then
-  begin
-   if
-    MSG.MsgTitle(FConsts.MsgTitle)
-     .MsgQuestion(FConsts.MsgQuestion)
-     .MsgBody(Format(FConsts.MsgBodyUpdateVersion + FConsts.Version, [Version.ToString]))
-     .MsgIcon(TiQuestion)
-     .MsgType(TyQuestion)
-     .DisplayQuestion
-   then
-    begin
-     LaunchUpdateApp(FExeUpdateApp);
-     Killtask(FKillApp);
-    end;
+  if UpdateAviable then
+   begin
+    if
+     MSG.MsgTitle(FMessages.MsgTitle)
+      .MsgQuestion(FMessages.MsgQuestion)
+      .MsgBody(Format(FMessages.MsgBodyUpdateVersion + FMessages.Version, [Version.ToString]))
+      .MsgIcon(TiQuestion)
+      .MsgType(TyQuestion)
+      .DisplayQuestion then
+         HDUpdate.View.Utils.FMXUpdate(FModelCheck.UpdateInfo);
    end else
-    MSG.MsgTitle(FConsts.MsgTitle)
+    MSG.MsgTitle(FMessages.MsgTitle)
      .MsgQuestion('')
-     .MsgBody(Format(FConsts.MsgBodyLastVersion + FConsts.Version, [Version.ToString]))
+     .MsgBody(Format(FMessages.MsgBodyLastVersion + FMessages.Version, [Version.ToString]))
      .MsgIcon(TiMessage)
      .MsgType(TyOK)
      .DisplayMessage;
 end;
 
+procedure THDUpdate.CheckStandalone(UpdateAviable: Boolean; Version: TFileVersion);
+begin
+  MSG     := THDMessageDlg.New;
+  FMessages := FFactoryConsts.Consts;
+
+  if UpdateAviable then
+  begin
+  if
+   MSG.MsgTitle(FMessages.MsgTitle)
+    .MsgQuestion(FMessages.MsgQuestion)
+    .MsgBody(Format(FMessages.MsgBodyUpdateVersion + FMessages.Version, [Version.ToString]))
+    .MsgIcon(TiQuestion)
+    .MsgType(TyQuestion)
+    .DisplayQuestion
+  then
+  begin
+   LaunchUpdateApp(FExeUpdateApp);
+   if not SameText(ExtractFileName(FKillApp), ExtractFileName(FExeUpdateApp)) then
+     Killtask(FKillApp);
+  end;
+  end else
+  MSG.MsgTitle(FMessages.MsgTitle)
+   .MsgQuestion('')
+   .MsgBody(Format(FMessages.MsgBodyLastVersion + FMessages.Version, [Version.ToString]))
+   .MsgIcon(TiMessage)
+   .MsgType(TyOK)
+   .DisplayMessage;
+end;
+
 constructor THDUpdate.Create;
 begin
   FModelCheck := TModelCheck.Create;
+  FFactoryConsts := TFactoryConsts.Global;   // instancia compartilhada: o .Language() vale para view/updater
 end;
 
 destructor THDUpdate.Destroy;
@@ -191,6 +217,7 @@ function THDUpdate.ExeUpdateApp(aValue: string): IHDUpdate;
 begin
   Result        := Self;
   FExeUpdateApp := aValue;
+  FModelCheck.ExeUpdateApp(aValue);
 end;
 
 function THDUpdate.ExtractNames(aExtractNames: TStringArray): IHDUpdate;
@@ -210,14 +237,14 @@ begin
   Result := FModelCheck.GetVersionUpdate.ToString;
 end;
 
-function THDUpdate.GitAuth(aGitAuth: Boolean): IHDUpdate;
+function THDUpdate.GitAuth(aGitAuth: Boolean = False): IHDUpdate;
 begin
   Result    := Self;
   FGitAuth  := aGitAuth;
   FModelCheck.GitAuth(aGitAuth);
 end;
 
-function THDUpdate.GitIni(aGitIni        : String)           : IHDUpdate;
+function THDUpdate.GitIni(aGitIni : String) : IHDUpdate;
 begin
   Result    := Self;
   FGitPath  := aGitIni;
@@ -256,6 +283,7 @@ function THDUpdate.KillTaskApp(aKillApp: TFileName): IHDUpdate;
 begin
   Result := Self;
   FKillApp := aKillApp;
+  FModelCheck.KillTaskApp(aKillApp);
 end;
 
 class function THDUpdate.New: IHDUpdate;
@@ -287,7 +315,7 @@ begin
   HDUpdate.View.Utils.FMXUpdate(FModelCheck.UpdateInfo);
 end;
 
-function THDUpdate.Titulo(aTitulo: String): IHDUpdate;
+function THDUpdate.Titulo(aTitulo: String = ''): IHDUpdate;
 begin
   Result  := Self;
   FTitulo := aTitulo;
@@ -296,10 +324,56 @@ end;
 
 procedure THDUpdate.UpdateNow;
 begin
-  FModelCheck.UpdateCheckProc(TFileVersion.Create(FActualVersion), Check);
+  FModelCheck.UpdateCheckProc(TFileVersion.Create(FActualVersion), UpdateProc);
+end;
+
+function THDUpdate.UseReleases(aValue: Boolean = False): IHDUpdate;
+begin
+  Result := Self;
+  FUseReleases := aValue;
+  FModelCheck.UseReleases(aValue);
+end;
+
+function THDUpdate.RequireAssetHash(aValue: Boolean = False): IHDUpdate;
+begin
+  Result := Self;
+  FRequireAssetHash := aValue;
+  FModelCheck.RequireAssetHash(aValue);
+end;
+
+function THDUpdate.ReleaseAssetName(aName: string): IHDUpdate;
+begin
+  Result := Self;
+  FReleaseAssetName := aName;
+  FModelCheck.ReleaseAssetName(aName);
+end;
+
+function THDUpdate.AssetType(aValue: TAssetType = TAssetType.atAuto): IHDUpdate;
+begin
+  Result := Self;
+  FAssetType := aValue;
+  FModelCheck.AssetType(aValue);
+end;
+
+function THDUpdate.Language(const ALanguage: string): IHDUpdate;
+begin
+  Result := Self;
+  FLanguage := ALanguage;
+  if not Assigned(FFactoryConsts) then
+    FFactoryConsts := TFactoryConsts.Global;
+
+  if Assigned(FFactoryConsts) then
+    FFactoryConsts.SetLanguage(ALanguage);
+end;
+
+function THDUpdate.VerifyExtractedFiles(aValue: Boolean = False): IHDUpdate;
+begin
+  Result := Self;
+  FVerifyExtractedFiles := aValue;
+  FModelCheck.VerifyExtractedFiles(aValue);
 end;
 
 initialization
- GlobalUpdate := THDUpdate.New;
+  GlobalUpdate := THDUpdate.New;
 
 end.

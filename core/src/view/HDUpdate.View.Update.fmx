@@ -518,7 +518,7 @@ object ViewUpdate: TViewUpdate
             Size.Width = 346.000000000000000000
             Size.Height = 82.000000000000000000
             Size.PlatformDefault = False
-            Text = 'ProgressBarCustom'
+            Text = 'Estamos preparando a sua atualiza'#231#227'o!'
             TextSettings.Font.Size = 14.000000000000000000
             TextSettings.FontColor = xFFF06478
             TextSettings.HorzAlign = Leading

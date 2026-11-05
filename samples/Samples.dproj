@@ -70,7 +70,7 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
         <SanitizedProjectName>Samples</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\hdmessagedlg\Samples;..\modules\hdmessagedlg\src\FMX;..\modules\hdmessagedlg\src;modules\.dcp;modules\.dcu;modules;modules\hdmessagedlg\Samples;modules\hdmessagedlg\src\FMX;modules\hdmessagedlg\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\hdmessagedlg\Samples;..\modules\hdmessagedlg\src\FMX;..\modules\hdmessagedlg\src;modules\.dcp;modules\.dcu;modules;modules\github_com_rtrevisan20_hdmessagedlg\src\FMX;modules\github_com_rtrevisan20_hdmessagedlg\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>vclwinx;DataSnapServer;RESTDWWizards;fmx;emshosting;vclie;DbxCommonDriver;bindengine;IndyIPCommon;VCLRESTComponents;DBXMSSQLDriver;FireDACCommonODBC;emsclient;FireDACCommonDriver;RESTDWSocketIndy;appanalytics;IndyProtocols;vclx;Skia.Package.RTL;DBAUtilites;IndyIPClient;dbxcds;vcledge;bindcompvclwinx;FmxTeeUI;emsedge;bindcompfmx;DBXFirebirdDriver;SynEdit_R;inetdb;FMXfrxe28;FireDACSqliteDriver;DbxClientDriver;FireDACASADriver;Tee;soapmidas;vclactnband;TeeUI;fmxFireDAC;dbexpress;FMXfrx28;FireDACInfxDriver;DBXMySQLDriver;DesktopCaptureComponents;VclSmp;inet;DataSnapCommon;vcltouch;fmxase;DBXOdbcDriver;dbrtl;FireDACDBXDriver;FireDACOracleDriver;Skia.Package.FMX;fmxdae;TeeDB;FireDACMSAccDriver;CustomIPTransport;FireDACMSSQLDriver;DataSnapIndy10ServerTransport;DataSnapConnectors;vcldsnap;DBXInterBaseDriver;FireDACMongoDBDriver;IndySystem;FireDACTDataDriver;Skia.Package.VCL;vcldb;FMXfrxADO28;RESTDWShellServices;vclFireDAC;FMXfrxTee28;bindcomp;FireDACCommon;DataSnapServerMidas;FireDACODBCDriver;emsserverresource;office2K;IndyCore;RESTBackendComponents;FMXfsTee28;bindcompdbx;rtl;FireDACMySQLDriver;FMXfs28;FireDACADSDriver;RESTDWDriverFireDAC;RESTComponents;DBXSqliteDriver;vcl;IndyIPServer;dsnapxml;dsnapcon;DataSnapClient;DataSnapProviderClient;adortl;RFindUnit;DBXSybaseASEDriver;DBXDb2Driver;NetCom7;vclimg;DataSnapFireDAC;emsclientfiredac;FireDACPgDriver;FireDAC;FireDACDSDriver;inetdbxpress;xmlrtl;tethering;FMXfrxDB28;FMXfsDB28;RESTDWCore;bindcompvcl;dsnap;FMXfrxDBX28;CloudService;DBXSybaseASADriver;DBXOracleDriver;FireDACDb2Driver;DBXInformixDriver;FMXfrxFD28;FMXfsADO28;fmxobj;bindcompvclsmp;DataSnapNativeClient;FMXTee;DatasnapConnectorsFreePascal;soaprtl;soapserver;FireDACIBDriver;$(DCC_UsePackage)</DCC_UsePackage>
@@ -139,7 +139,7 @@
             <Form>Form1</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\core\src\HDUpdate.pas"/>
+        <DCCReference Include="EnvConfig.pas"/>
         <DCCReference Include="..\core\src\core\HDUpdate.Core.Check.pas"/>
         <DCCReference Include="..\core\src\core\HDUpdate.Core.Commons.pas"/>
         <DCCReference Include="..\core\src\core\HDUpdate.Core.Interfaces.pas"/>
@@ -161,6 +161,7 @@
         </DCCReference>
         <DCCReference Include="..\core\src\view\HDUpdate.View.Update.Thread.pas"/>
         <DCCReference Include="..\core\src\view\HDUpdate.View.Utils.pas"/>
+        <DCCReference Include="..\core\src\HDUpdate.pas"/>
         <RcItem Include="..\imgs\updatedResource.png">
             <ResourceType>RCDATA</ResourceType>
             <ResourceId>updateResource</ResourceId>
@@ -210,8 +211,26 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="..\imgs\UpdateDefault.png" Configuration="Debug" Class="ProjectFile"/>
+                <DeployFile LocalName="..\imgs\UpdateDefault.png" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="..\imgs\updatedResource.png" Configuration="Debug" Class="ProjectFile"/>
+                <DeployFile LocalName="..\imgs\updatedResource.png" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Output\Samples.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="Output\Samples.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Samples.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>

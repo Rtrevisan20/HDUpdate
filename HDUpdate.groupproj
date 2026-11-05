@@ -12,6 +12,9 @@
         <Projects Include="samples\Console.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="tools\GenerateManifest.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="Console:Make">
         <MSBuild Projects="samples\Console.dproj" Targets="Make"/>
     </Target>
+    <Target Name="GenerateManifest">
+        <MSBuild Projects="tools\GenerateManifest.dproj"/>
+    </Target>
+    <Target Name="GenerateManifest:Clean">
+        <MSBuild Projects="tools\GenerateManifest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GenerateManifest:Make">
+        <MSBuild Projects="tools\GenerateManifest.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="HDUpdate;Samples;Console"/>
+        <CallTarget Targets="HDUpdate;Samples;Console;GenerateManifest"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="HDUpdate:Clean;Samples:Clean;Console:Clean"/>
+        <CallTarget Targets="HDUpdate:Clean;Samples:Clean;Console:Clean;GenerateManifest:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="HDUpdate:Make;Samples:Make;Console:Make"/>
+        <CallTarget Targets="HDUpdate:Make;Samples:Make;Console:Make;GenerateManifest:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

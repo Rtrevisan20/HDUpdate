@@ -6,7 +6,7 @@ uses
   System.StartUpCopy,
   FMX.Forms,
   Samples.Main in 'Samples.Main.pas' {Form1},
-  HDUpdate in '..\core\src\HDUpdate.pas',
+  EnvConfig in 'EnvConfig.pas',
   HDUpdate.Core.Check in '..\core\src\core\HDUpdate.Core.Check.pas',
   HDUpdate.Core.Commons in '..\core\src\core\HDUpdate.Core.Commons.pas',
   HDUpdate.Core.Interfaces in '..\core\src\core\HDUpdate.Core.Interfaces.pas',
@@ -24,7 +24,8 @@ uses
   HDUpdate.Language.US in '..\core\src\language\HDUpdate.Language.US.pas',
   HDUpdate.View.Update in '..\core\src\view\HDUpdate.View.Update.pas' {ViewUpdate},
   HDUpdate.View.Update.Thread in '..\core\src\view\HDUpdate.View.Update.Thread.pas',
-  HDUpdate.View.Utils in '..\core\src\view\HDUpdate.View.Utils.pas';
+  HDUpdate.View.Utils in '..\core\src\view\HDUpdate.View.Utils.pas',
+  HDUpdate in '..\core\src\HDUpdate.pas';
 
 {$R *.res}
 
