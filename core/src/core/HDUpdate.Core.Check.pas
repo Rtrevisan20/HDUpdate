@@ -117,6 +117,7 @@ begin
       if FModelInternet.GetLatestRelease(LRelease) then
       begin
         LVersion := LRelease.GetVersion;
+        FUpdateInfo.VersionUpdate := LVersion.ToString;
         if LVersion > FVersionAtual then
         begin
           if FModelInternet.GetReleaseAssetUrl(LRelease, FUpdateInfo.ReleaseAssetName, LUrl, LDigest, FUpdateInfo.AssetType) then
@@ -178,8 +179,18 @@ begin
 end;
 
 function TModelCheck.GetVersionUpdate: TFileVersion;
+var
+  LRelease: TGitHubRelease;
 begin
-  FModelInternet.GetVersionUpdate(Result);
+  if FUpdateInfo.UseReleases then
+  begin
+    if FModelInternet.GetLatestRelease(LRelease) then
+      Result := LRelease.GetVersion
+    else
+      Result := TFileVersion.Create('0.0.0.0');
+  end
+  else
+    FModelInternet.GetVersionUpdate(Result);
   FUpdateInfo.VersionUpdate := Result.ToString;
 end;
 
@@ -282,6 +293,7 @@ begin
           if FModelInternet.GetLatestRelease(LRelease) then
           begin
             LVersion := LRelease.GetVersion;
+            FUpdateInfo.VersionUpdate := LVersion.ToString;
             if LVersion > aVersion then
             begin
               if FModelInternet.GetReleaseAssetUrl(LRelease, FUpdateInfo.ReleaseAssetName, LUrl, LDigest, FUpdateInfo.AssetType) then

@@ -34,6 +34,7 @@ type
     btnLanguageEN: TButton;
     btnUpdateHashConsole: TButton;
     btnUpdateHashSamples: TButton;
+    btnGetVersion: TButton;
     procedure btnCheckVersionClick(Sender: TObject);
     procedure btnUpdateNowClick(Sender: TObject);
     procedure btnUpdateStandaloneClick(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure btnLanguageENClick(Sender: TObject);
     procedure btnUpdateHashConsoleClick(Sender: TObject);
     procedure btnUpdateHashSamplesClick(Sender: TObject);
+    procedure btnGetVersionClick(Sender: TObject);
   private
     procedure ConfigureUpdateCommon;
     procedure ShowResult(const ATitle, AMsg: string);
@@ -173,7 +175,7 @@ begin
 
   if GlobalUpdate.GetUpdate then
   begin
-    ShowResult('Asset .exe Encontrado', 
+    ShowResult('Asset .exe Encontrado',
       'Instalador .exe detectado.' + #13#10 + 
       'O instalador sera executado...');
     GlobalUpdate.UpdateNow;
@@ -272,6 +274,20 @@ procedure TForm1.btnLanguagePTClick(Sender: TObject);
 begin
   GlobalUpdate.Language('pt-BR');
   ShowResult('Idioma', 'Idioma alterado para Portugues (pt-BR)');
+end;
+
+procedure TForm1.btnGetVersionClick(Sender: TObject);
+begin
+  // Modo Releases (GitHub Releases API) - Item 8
+  ConfigureUpdateCommon;
+  var LVersion := GlobalUpdate
+    .UseReleases(True)              // Item 8: usa /releases/latest
+    .RequireAssetHash(True)         // Item 8: valida SHA-256 do asset
+//    .ReleaseAssetName('Samples.zip') // Item 8: asset especifico
+    .Language('pt-BR')             // Item 9: i18n runtime
+    .GetVersionUpdate;
+
+  ShowResult('Release Encontrada', 'Versao: ' + LVersion);
 end;
 
 procedure TForm1.btnLanguageENClick(Sender: TObject);

@@ -71,7 +71,7 @@ object Form1: TForm1
   object btnUpdateStandalone: TButton
     Position.X = 8.000000000000000000
     Position.Y = 198.000000000000000000
-    Size.Width = 200.000000000000000000
+    Size.Width = 89.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 7
@@ -85,7 +85,7 @@ object Form1: TForm1
     Size.Width = 95.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 8
+    TabOrder = 9
     Text = 'pt-BR'
     TextSettings.Trimming = None
     OnClick = btnLanguagePTClick
@@ -96,7 +96,7 @@ object Form1: TForm1
     Size.Width = 95.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 9
+    TabOrder = 10
     Text = 'en-US'
     TextSettings.Trimming = None
     OnClick = btnLanguageENClick
@@ -107,7 +107,7 @@ object Form1: TForm1
     Size.Width = 200.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 10
+    TabOrder = 11
     Text = 'Instalador .exe (atExe)'
     TextSettings.Trimming = None
     OnClick = btnUpdateExeAssetClick
@@ -118,7 +118,7 @@ object Form1: TForm1
     Size.Width = 200.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 11
+    TabOrder = 12
     Text = 'Forcar .zip (atZip)'
     TextSettings.Trimming = None
     OnClick = btnUpdateZipAssetClick
@@ -134,7 +134,7 @@ object Form1: TForm1
     TextSettings.HorzAlign = Center
     TextSettings.VertAlign = Leading
     Text = 'Teste: Releases + SHA-256 + i18n + Hash Verify + Instalador .exe'
-    TabOrder = 12
+    TabOrder = 13
   end
   object btnUpdateHashConsole: TButton
     Position.X = 8.000000000000000000
@@ -157,5 +157,16 @@ object Form1: TForm1
     Text = 'Update + Hash Verify Samples (ini)'
     TextSettings.Trimming = None
     OnClick = btnUpdateHashSamplesClick
+  end
+  object btnGetVersion: TButton
+    Position.X = 105.000000000000000000
+    Position.Y = 198.000000000000000000
+    Size.Width = 103.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Text = 'Get Ver. Release'
+    TextSettings.Trimming = None
+    OnClick = btnGetVersionClick
   end
 end
