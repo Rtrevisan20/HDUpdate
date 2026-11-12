@@ -225,26 +225,36 @@ begin
 end;
 
 procedure TUpdater.Done;
+var
+  LLaunched: Boolean;
 begin
-  // 1. Encerra a instancia antiga ANTES de abrir a nova.
-  //    Se KillTaskApp for o proprio executavel, o encerramento acontece pela
-  //    auto-terminacao do processo (FRestartApp), pois Killtask por nome
-  //    derrubaria tambem a instancia recem-lancada.
+  // 1. Nao mata o proprio processo.
+  //    - Se KillTaskApp aponta para o executavel em execucao, o encerramento e
+  //      feito pela auto-terminacao (FRestartApp): Killtask por nome derrubaria o
+  //      processo atual ANTES de lancar o instalador (o instalador nunca abria).
+  //    - Se aponta para o arquivo que sera lancado, nao mata a instancia nova.
   if (FKillTaskApp <> '') and
+     (not SameText(ExtractFileName(FKillTaskApp), ExtractFileName(ParamStr(0)))) and
      (not SameText(ExtractFileName(FKillTaskApp), ExtractFileName(FLaunchUpdateApp))) then
     HDUpdate.Core.Utils.Killtask(FKillTaskApp);
 
-  // 2. Depois lanca a nova instancia
+  // 2. Depois lanca a nova instancia / instalador
+  LLaunched := False;
   SyncView(
     procedure
     begin
       FView.State := TUpdateState.Done;
       FView.Status := FConsts.Consts.DoneStatus;
-      FView.ShowMessage(FConsts.Consts.DoneMessage);
-      HDUpdate.Core.Utils.LaunchUpdateApp(FLaunchUpdateApp, True);
+      LLaunched := HDUpdate.Core.Utils.LaunchUpdateApp(FLaunchUpdateApp, True);
+      if LLaunched then
+        FView.ShowMessage(FConsts.Consts.DoneMessage)
+      else
+        FView.ShowMessageError(FConsts.Consts.LaunchError + FLaunchUpdateApp);
     end);
 
-  FRestartApp := True;
+  // So encerra esta instancia se o lancamento deu certo: se falhou, mantem o app
+  // aberto para o usuario ver a mensagem (antes fechava sem aviso).
+  FRestartApp := LLaunched;
   // Limpa arquivos .old apos sucesso
   CleanOldFiles;
 end;

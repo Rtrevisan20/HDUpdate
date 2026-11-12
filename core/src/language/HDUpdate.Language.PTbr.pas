@@ -66,6 +66,7 @@ type
     function CancelButton         : string;
     function WaitingMessage       : string;
     function PreparingUpdate      : string;
+    function LaunchError          : string;
   end;
 
 implementation
@@ -182,6 +183,11 @@ end;
 function TMessageConstsPTbr.PreparingUpdate: string;
 begin
   Result := 'Estamos preparando a sua atualização!';
+end;
+
+function TMessageConstsPTbr.LaunchError: string;
+begin
+  Result := 'Não foi possível iniciar o instalador. Arquivo: ';
 end;
 
 end.

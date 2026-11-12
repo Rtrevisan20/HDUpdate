@@ -38,7 +38,7 @@ uses
   WinApi.Windows,
   Winapi.TlHelp32;
 
-  procedure LaunchUpdateApp   (FileName: TFileName = 'Update.exe'; RunAsAdministrator: Boolean = True);
+  function LaunchUpdateApp   (FileName: TFileName = 'Update.exe'; RunAsAdministrator: Boolean = True): Boolean;
   function  Killtask          (ExeFileName: TFileName): Integer;
   function  NormalizeFileName (FileName: string): string;
   /// Extrai o nome do arquivo de uma URL, removendo query string (?token=...),
@@ -118,7 +118,7 @@ begin
   CloseHandle(FSnapshotHandle);
 end;
 
-procedure LaunchUpdateApp(FileName: TFileName; RunAsAdministrator: Boolean);
+function LaunchUpdateApp(FileName: TFileName; RunAsAdministrator: Boolean): Boolean;
 var
   Info: TShellExecuteInfo;
 begin
@@ -133,7 +133,7 @@ begin
   Info.lpParameters := '';
   Info.lpDirectory := PChar(ExtractFilePath(FileName));
   Info.nShow := SW_NORMAL;
-  ShellExecuteEx(@Info);
+  Result := ShellExecuteEx(@Info);
 end;
 
 end.

@@ -56,6 +56,8 @@ type
     function CancelButton         : string;
     function WaitingMessage       : string;
     function PreparingUpdate      : string;
+    // Item 9.18: falha ao lancar o instalador/atualizador
+    function LaunchError          : string;
   end;
 
   IFactoryConsts = interface
